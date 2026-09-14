@@ -3,8 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#f5f5f7" />
   <title>Оставьте отзыв</title>
   <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: rgba(255, 255, 255, 0.92);
+      --text: #1d1d1f;
+      --secondary: #86868b;
+      --line: rgba(0, 0, 0, 0.08);
+      --blue: #007aff;
+      --green: #34c759;
+      --red: #ff3b30;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -14,245 +26,183 @@
     }
 
     body {
-      background: #f2f2f7;
-      background: linear-gradient(135deg, #f5f5f7 0%, #e5e5ea 100%);
-      color: #1d1d1f;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       min-height: 100vh;
-      padding: 20px 16px;
-      overflow-x: hidden;
-    }
-
-    /* Фоновые размытые круги для создания объема и воздуха */
-    .bg-blob-1 {
-      position: absolute;
-      width: 280px;
-      height: 280px;
-      border-radius: 50%;
-      background: rgba(0, 122, 255, 0.12);
-      filter: blur(60px);
-      top: 10%;
-      left: 10%;
-      z-index: 0;
-    }
-
-    .bg-blob-2 {
-      position: absolute;
-      width: 260px;
-      height: 260px;
-      border-radius: 50%;
-      background: rgba(52, 199, 89, 0.1);
-      filter: blur(60px);
-      bottom: 10%;
-      right: 10%;
-      z-index: 0;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 24px 16px;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
     }
 
     .container {
-      position: relative;
-      z-index: 1;
-      background: rgba(255, 255, 255, 0.82);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border: 1px solid rgba(255, 255, 255, 0.7);
-      border-radius: 32px;
-      padding: 36px 24px 28px;
-      max-width: 380px;
       width: 100%;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
+      max-width: 390px;
+      padding: 38px 28px 26px;
       text-align: center;
-      animation: cardAppear 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 28px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.07), 0 2px 8px rgba(0, 0, 0, 0.03);
+      animation: appear 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
-    @keyframes cardAppear {
-      from { opacity: 0; transform: translateY(16px) scale(0.97); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    /* Лаконичный премиум-значок */
     .icon-badge {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 18px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #ffffff 0%, #f2f2f7 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.8);
-      border: 1px solid rgba(0, 0, 0, 0.04);
+      width: 56px;
+      height: 56px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 22px;
+      color: var(--blue);
+      background: #eaf3ff;
+      border-radius: 18px;
+    }
+
+    .icon-badge svg {
+      width: 25px;
+      height: 25px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .client-title {
-      font-size: 22px;
+      max-width: 300px;
+      margin: 0 auto 9px;
+      font-size: clamp(23px, 6vw, 28px);
+      line-height: 1.12;
+      letter-spacing: -0.7px;
       font-weight: 700;
-      letter-spacing: -0.5px;
-      margin-bottom: 6px;
-      color: #1d1d1f;
     }
 
-    .subtitle {
-      font-size: 15px;
-      color: #86868b;
-      margin-bottom: 26px;
-      line-height: 1.4;
-      font-weight: 400;
-    }
-
-    /* Анимации шагов */
-    .step {
-      display: none;
-    }
+    .step { display: none; }
 
     .step.active {
       display: block;
-      animation: stepFade 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: step-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
-    @keyframes stepFade {
-      from { opacity: 0; transform: translateY(8px); }
+    .subtitle {
+      margin-bottom: 26px;
+      color: var(--secondary);
+      font-size: 15px;
+      line-height: 1.45;
+      letter-spacing: -0.1px;
+    }
+
+    .btn-main,
+    .platform-btn {
+      width: 100%;
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: 15px;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.18s ease, filter 0.18s ease, background 0.18s ease;
+    }
+
+    .btn-main + .btn-main,
+    .platform-btn + .platform-btn { margin-top: 10px; }
+
+    .btn-main:active,
+    .platform-btn:active,
+    .btn-back:active { transform: scale(0.975); }
+
+    .btn-positive {
+      color: #fff;
+      background: var(--green);
+      box-shadow: 0 7px 16px rgba(52, 199, 89, 0.2);
+    }
+
+    .btn-positive:hover { filter: brightness(0.97); }
+
+    .btn-negative {
+      color: var(--text);
+      background: #e9e9ee;
+    }
+
+    .btn-negative:hover { background: #dedee3; }
+
+    .platform-btn {
+      min-height: 52px;
+      color: #fff;
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .platform-btn:hover { filter: brightness(0.96); }
+    .btn-yandex { background: var(--red); }
+    .btn-2gis { background: #20a900; }
+    .btn-google { background: var(--blue); }
+    .btn-telegram { background: #0a9bd8; }
+
+    .btn-back {
+      margin-top: 20px;
+      padding: 5px 10px;
+      color: var(--blue);
+      background: transparent;
+      border: 0;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .btn-back:hover { opacity: 0.7; }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(12px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes step-in {
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Главные кнопки */
-    .btn-main {
-      width: 100%;
-      padding: 17px 20px;
-      border-radius: 18px;
-      border: none;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-bottom: 12px;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      text-decoration: none;
-    }
-
-    .btn-positive {
-      background-color: #34c759;
-      color: #ffffff;
-      box-shadow: 0 6px 18px rgba(52, 199, 89, 0.28);
-    }
-
-    .btn-positive:active {
-      transform: scale(0.97);
-      background-color: #30b753;
-    }
-
-    .btn-negative {
-      background-color: rgba(120, 120, 128, 0.09);
-      color: #1d1d1f;
-    }
-
-    .btn-negative:active {
-      background-color: rgba(120, 120, 128, 0.18);
-      transform: scale(0.97);
-    }
-
-    /* Кнопки платформ */
-    .platform-btn {
-      width: 100%;
-      padding: 16px 18px;
-      border-radius: 18px;
-      text-decoration: none;
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      color: #ffffff;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    }
-
-    .platform-btn:active {
-      transform: scale(0.97);
-    }
-
-    .btn-yandex { background: linear-gradient(135deg, #fc3f1d, #ff6b00); }
-    .btn-2gis { background: linear-gradient(135deg, #2eaf00, #259300); }
-    .btn-google { background: linear-gradient(135deg, #4285f4, #2b6cb0); }
-    .btn-telegram { background: linear-gradient(135deg, #24a1de, #0088cc); }
-
-    .btn-back {
-      background: none;
-      border: none;
-      color: #86868b;
-      font-size: 14px;
-      font-weight: 500;
-      margin-top: 14px;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-
-    .btn-back:hover {
-      color: #1d1d1f;
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
 <body>
-
-  <div class="bg-blob-1"></div>
-  <div class="bg-blob-2"></div>
-
-  <div class="container">
-    <div class="icon-badge">✨</div>
+  <main class="container">
+    <div class="icon-badge" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 20.2S4.5 15.8 4.5 9.8A4.3 4.3 0 0 1 12 7.1a4.3 4.3 0 0 1 7.5 2.7c0 6-7.5 10.4-7.5 10.4Z" />
+        <path d="M8.4 11.2h.01M15.6 11.2h.01M9.5 14.4c1.6 1 3.4 1 5 0" />
+      </svg>
+    </div>
 
     <h1 class="client-title" id="client-name">Загрузка...</h1>
 
-    <!-- ШАГ 1: Главный вопрос -->
-    <div id="step-1" class="step active">
+    <section id="step-1" class="step active">
       <p class="subtitle">Вам всё понравилось при посещении?</p>
-      
-      <button class="btn-main btn-positive" onclick="goToStep('step-positive')">
-        👍 Да, всё отлично!
-      </button>
-      
-      <button class="btn-main btn-negative" onclick="goToStep('step-negative')">
-        👎 Есть замечания
-      </button>
-    </div>
+      <button class="btn-main btn-positive" onclick="goToStep('step-positive')">Да, всё отлично</button>
+      <button class="btn-main btn-negative" onclick="goToStep('step-negative')">Есть замечания</button>
+    </section>
 
-    <!-- ШАГ 2А: Положительный отзыв -->
-    <div id="step-positive" class="step">
+    <section id="step-positive" class="step">
       <p class="subtitle">Выберите удобный сервис, чтобы оставить отзыв:</p>
-      
-      <a id="btn-yandex" href="#" target="_blank" class="platform-btn btn-yandex">
-        Яндекс Карты
-      </a>
-      
-      <a id="btn-2gis" href="#" target="_blank" class="platform-btn btn-2gis">
-        2ГИС
-      </a>
-      
-      <a id="btn-google" href="#" target="_blank" class="platform-btn btn-google">
-        Google Maps
-      </a>
+      <a id="btn-yandex" href="#" target="_blank" rel="noopener" class="platform-btn btn-yandex">Яндекс Карты</a>
+      <a id="btn-2gis" href="#" target="_blank" rel="noopener" class="platform-btn btn-2gis">2ГИС</a>
+      <a id="btn-google" href="#" target="_blank" rel="noopener" class="platform-btn btn-google">Google Maps</a>
+      <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
+    </section>
 
-      <button class="btn-back" onclick="goToStep('step-1')">← Назад</button>
-    </div>
-
-    <!-- ШАГ 2Б: Негативный отзыв -->
-    <div id="step-negative" class="step">
-      <p class="subtitle">Нам очень жаль! Напишите руководителю напрямую, чтобы мы всё исправили:</p>
-      
-      <a id="btn-telegram" href="#" target="_blank" class="platform-btn btn-telegram">
-        💬 Написать в Telegram
-      </a>
-
-      <button class="btn-back" onclick="goToStep('step-1')">← Назад</button>
-    </div>
-
-  </div>
+    <section id="step-negative" class="step">
+      <p class="subtitle">Нам очень жаль. Напишите руководителю напрямую — мы всё исправим.</p>
+      <a id="btn-telegram" href="#" target="_blank" rel="noopener" class="platform-btn btn-telegram">Написать в Telegram</a>
+      <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
+    </section>
+  </main>
 
   <script>
     function goToStep(stepId) {
@@ -261,45 +211,45 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const rawId = urlParams.get('id');
-      const clientId = rawId ? rawId.trim() : null;
+      const clientId = new URLSearchParams(window.location.search).get('id')?.trim() || null;
 
-      // Обходим кэш при каждом сканировании
       fetch('./clients.json?v=' + Date.now(), { cache: 'no-store' })
         .then(response => {
           if (!response.ok) throw new Error('clients.json не найден');
           return response.json();
         })
         .then(data => {
-          let client = null;
+          let client = clientId ? data[clientId] : data[Object.keys(data)[0]];
 
-          if (clientId) {
-            client = data[clientId];
-            if (!client) {
-              document.getElementById('client-name').textContent = 'Заведение не найдено';
-              return;
+          if (!client) {
+            document.getElementById('client-name').textContent = 'Заведение не найдено';
+            return;
+          }
+
+          document.getElementById('client-name').textContent = client.name || 'Оцените нашу работу';
+
+          const setPlatform = (btnId, url) => {
+            const btn = document.getElementById(btnId);
+            if (btn) {
+              if (url && url.trim() !== '' && url !== '#') {
+                btn.href = url;
+                btn.style.display = 'flex';
+              } else {
+                btn.style.display = 'none';
+              }
             }
-          } else {
-            const keys = Object.keys(data);
-            if (keys.length > 0) client = data[keys[0]];
-          }
+          };
 
-          if (client) {
-            document.getElementById('client-name').textContent = client.name || 'Оцените нашу работу';
-
-            if (client.yandex) document.getElementById('btn-yandex').href = client.yandex;
-            if (client.gis2) document.getElementById('btn-2gis').href = client.gis2;
-            if (client.google) document.getElementById('btn-google').href = client.google;
-            if (client.telegram) document.getElementById('btn-telegram').href = client.telegram;
-          }
+          setPlatform('btn-yandex', client.yandex);
+          setPlatform('btn-2gis', client.gis2);
+          setPlatform('btn-google', client.google);
+          setPlatform('btn-telegram', client.telegram);
         })
-        .catch(err => {
-          console.error(err);
+        .catch(error => {
+          console.error(error);
           document.getElementById('client-name').textContent = 'Ошибка базы данных';
         });
     });
   </script>
-
 </body>
 </html>
