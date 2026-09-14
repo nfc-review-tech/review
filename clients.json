@@ -1,23 +1,20 @@
 {
   "1364154296": {
     "name": "Теремок",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/ thumb/8/86/Teremok_logo.svg/1200px-Teremok_logo.svg.png",
+    "color": "#d62828",
     "yandex": "https://yandex.ru/maps/org/teremok/1364154296/reviews/?add-review=true",
     "gis2": "https://2gis.ru/firm/5348553838898046/tab/reviews",
     "google": "https://maps.google.com/...",
     "telegram": "https://t.me/shekiants"
   },
-  "1111549260": {
-    "name": "Шоколадница",
-    "yandex": "https://yandex.ru/maps/org/teremok/1111549260/reviews/?add-review=true",
-    "gis2": "https://2gis.ru/firm/5348552839809409/tab/reviews",
-    "google": "https://www.google.com/maps/place/%D0%A8%D0%BE%D0%BA%D0%BE%D0%BB%D0%B0%D0%B4%D0%BD%D0%B8%D1%86%D0%B0/@59.9345724,30.3238518,17z/data=!4m8!3m7!1s0x46963105fbffe337:0xa1bd2ab845e40550!8m2!3d59.9345724!4d30.3264267!9m1!1b1!16s%2Fg%2F1tf745pt?entry=ttu&g_ep=EgoyMDI2MDkwMi4wIKXMDSoASAFQAw%3D%3D",
-    "telegram": "https://t.me/shekiants"
-  },
   "1119345715": {
     "name": "Евразия",
-    "yandex": "https://yandex.com/maps/org/yevraziya/1119345715/reviews/?ll=30.326396%2C59.933911&tab=reviews&z=16.42",
+    "logo": "",
+    "color": "#007aff",
+    "yandex": "https://yandex.com/maps/org/yevraziya/1119345715/reviews/",
     "gis2": "https://2gis.ru/firm/5348552838746672/tab/reviews",
-    "google": "https://www.google.com/maps/place/%D0%95%D0%B2%D1%80%D0%B0%D0%B7%D0%B8%D1%8F/@59.933643,30.3236203,17z/data=!4m8!3m7!1s0x4696310676c07fcb:0xd6323f178a545a7d!8m2!3d59.933643!4d30.3261952!9m1!1b1!16s%2Fg%2F11cs64tzq4?entry=ttu&g_ep=EgoyMDI2MDkwMi4wIKXMDSoASAFQAw%3D%3D",
+    "google": "https://www.google.com/maps/...",
     "telegram": "https://t.me/admin_venera"
   }
 }
