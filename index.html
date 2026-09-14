@@ -2,67 +2,135 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Оставьте отзыв</title>
   <style>
+    :root {
+      --brand-color: #007aff;
+      --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background-color: #f4f5f7;
-      color: #1c1c1e;
+      background: var(--bg-gradient);
+      color: #1d1d1f;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      padding: 20px;
+      padding: 24px 16px;
+      overflow-x: hidden;
+    }
+
+    /* Фоновые размытые свечения для эффекта воздуха */
+    .bg-glow {
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      background: var(--brand-color);
+      opacity: 0.15;
+      filter: blur(80px);
+      z-index: 0;
+      top: 15%;
+      transition: background 0.5s ease;
     }
 
     .container {
-      background: #ffffff;
-      border-radius: 24px;
-      padding: 32px 24px;
-      max-width: 400px;
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 32px;
+      padding: 36px 24px 28px;
+      max-width: 380px;
       width: 100%;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03);
       text-align: center;
+      animation: containerAppear 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes containerAppear {
+      from { opacity: 0; transform: translateY(20px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Аватар / Логотип */
+    .logo-wrapper {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 16px;
+      border-radius: 22px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .logo-fallback {
+      font-size: 32px;
     }
 
     .client-title {
       font-size: 22px;
       font-weight: 700;
-      margin-bottom: 8px;
+      letter-spacing: -0.4px;
+      margin-bottom: 6px;
     }
 
     .subtitle {
       font-size: 15px;
-      color: #6e6e73;
-      margin-bottom: 28px;
+      color: #86868b;
+      margin-bottom: 24px;
       line-height: 1.4;
+      font-weight: 400;
     }
 
+    /* Анимации Шагов */
     .step {
       display: none;
     }
 
     .step.active {
       display: block;
+      animation: stepFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
+    @keyframes stepFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Кнопки главного выбора */
     .btn-main {
       width: 100%;
-      padding: 16px 20px;
-      border-radius: 16px;
+      padding: 18px 20px;
+      border-radius: 20px;
       border: none;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      margin-bottom: 14px;
-      transition: all 0.2s ease;
+      margin-bottom: 12px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -71,64 +139,80 @@
     }
 
     .btn-positive {
-      background-color: #34c759;
+      background-color: var(--brand-color);
       color: #ffffff;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
 
     .btn-positive:active {
-      background-color: #2fb350;
-      transform: scale(0.98);
+      transform: scale(0.97);
+      opacity: 0.9;
     }
 
     .btn-negative {
-      background-color: #f2f2f7;
+      background-color: rgba(120, 120, 128, 0.08);
       color: #3a3a3c;
     }
 
     .btn-negative:active {
-      background-color: #e5e5ea;
-      transform: scale(0.98);
+      background-color: rgba(120, 120, 128, 0.16);
+      transform: scale(0.97);
     }
 
+    /* Кнопки платформ */
     .platform-btn {
       width: 100%;
-      padding: 14px 18px;
-      border-radius: 14px;
+      padding: 16px 18px;
+      border-radius: 18px;
       text-decoration: none;
       font-size: 15px;
       font-weight: 600;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      transition: transform 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       color: #ffffff;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
     }
 
     .platform-btn:active {
-      transform: scale(0.98);
+      transform: scale(0.97);
     }
 
-    .btn-yandex { background-color: #fc3f1d; }
-    .btn-2gis { background-color: #2eaf00; }
-    .btn-google { background-color: #4285f4; }
-    .btn-telegram { background-color: #24a1de; }
+    .btn-yandex { background: linear-gradient(135deg, #fc4a1a, #f7b733); }
+    .btn-2gis { background: linear-gradient(135deg, #11998e, #38ef7d); }
+    .btn-google { background: linear-gradient(135deg, #4285f4, #34a853); }
+    .btn-telegram { background: linear-gradient(135deg, #0088cc, #00c6ff); }
 
     .btn-back {
       background: none;
       border: none;
-      color: #8e8e93;
+      color: #86868b;
       font-size: 14px;
-      margin-top: 16px;
+      font-weight: 500;
+      margin-top: 14px;
       cursor: pointer;
-      text-decoration: underline;
+      transition: color 0.2s;
+    }
+
+    .btn-back:hover {
+      color: #1d1d1f;
     }
   </style>
 </head>
 <body>
 
+  <div class="bg-glow" id="bg-glow"></div>
+
   <div class="container">
+    <!-- Логотип / Иконка -->
+    <div class="logo-wrapper">
+      <img id="client-logo" class="logo-img" src="" alt="Logo" />
+      <span id="client-fallback" class="logo-fallback">✨</span>
+    </div>
+
     <h1 class="client-title" id="client-name">Загрузка...</h1>
 
     <!-- ШАГ 1: Главный вопрос -->
@@ -146,7 +230,7 @@
 
     <!-- ШАГ 2А: Положительный отзыв -->
     <div id="step-positive" class="step">
-      <p class="subtitle">Спасибо! Выберите удобный сервис, чтобы оставить отзыв:</p>
+      <p class="subtitle">Выберите удобный сервис, чтобы оставить отзыв:</p>
       
       <a id="btn-yandex" href="#" target="_blank" class="platform-btn btn-yandex">
         Яндекс Карты
@@ -184,28 +268,48 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const clientId = urlParams.get('id');
+      const rawId = urlParams.get('id');
+      const clientId = rawId ? rawId.trim() : null;
 
-      fetch('./clients.json')
+      fetch('./clients.json?v=' + Date.now(), { cache: 'no-store' })
         .then(response => response.json())
         .then(data => {
-          const keys = Object.keys(data);
-          if (keys.length === 0) return;
+          let client = null;
 
-          // Если ID передали и он есть в базе — берем его. 
-          // Если ID не передали или он не найден — берем самого первого клиента из JSON!
-          const client = (clientId && data[clientId]) ? data[clientId] : data[keys[0]];
+          if (clientId && data[clientId]) {
+            client = data[clientId];
+          } else {
+            const keys = Object.keys(data);
+            if (keys.length > 0) client = data[keys[0]];
+          }
 
           if (client) {
             document.getElementById('client-name').textContent = client.name || 'Оцените нашу работу';
 
+            // Настройка брендированного цвета
+            if (client.color) {
+              document.documentElement.style.setProperty('--brand-color', client.color);
+            }
+
+            // Настройка логотипа
+            if (client.logo && client.logo.trim() !== '') {
+              const logoImg = document.getElementById('client-logo');
+              logoImg.src = client.logo;
+              logoImg.style.display = 'block';
+              document.getElementById('client-fallback').style.display = 'none';
+            }
+
+            // Подстановка ссылок
             if (client.yandex) document.getElementById('btn-yandex').href = client.yandex;
             if (client.gis2) document.getElementById('btn-2gis').href = client.gis2;
             if (client.google) document.getElementById('btn-google').href = client.google;
             if (client.telegram) document.getElementById('btn-telegram').href = client.telegram;
           }
         })
-        .catch(err => console.error('Ошибка загрузки clients.json:', err));
+        .catch(err => {
+          console.error(err);
+          document.getElementById('client-name').textContent = 'Оцените нашу работу';
+        });
     });
   </script>
 
