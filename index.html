@@ -7,18 +7,14 @@
   <title>Оставьте отзыв</title>
   <style>
     :root {
-      /* Легкие и воздушные цвета */
       --bg: #f2f2f7;
       --card: #ffffff;
       --text: #1d1d1f;
       --secondary: #86868b;
-      
-      /* Цвета для кнопок первого шага */
       --green-bg: #e8f5e9;
       --green-text: #2e7d32;
       --orange-bg: #fff0e5;
       --orange-text: #d84315;
-      
       --blue-light: #eaf2ff;
       --blue: #007aff;
     }
@@ -128,7 +124,6 @@
       color: var(--orange-text);
     }
 
-    /* Кнопки площадок */
     .platform-btn {
       width: 100%;
       min-height: 64px;
@@ -157,16 +152,14 @@
     
     .platform-btn:active { transform: scale(0.98) translateY(0); }
 
-    /* Настройки для квадратных прозрачных иконок (PNG) */
     .platform-icon {
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       position: absolute;
       left: 16px;
       object-fit: contain;
     }
 
-    /* Кнопка "Назад" */
     .btn-back {
       margin-top: 16px;
       padding: 12px 24px;
@@ -202,7 +195,6 @@
 
     <h1 class="client-title" id="client-name">Загрузка...</h1>
 
-    <!-- ШАГ 1: Оценка -->
     <section id="step-1" class="step active">
       <p class="subtitle">Вам всё понравилось при посещении?</p>
       
@@ -218,30 +210,27 @@
       </div>
     </section>
 
-    <!-- ШАГ 2: Положительный отзыв (Площадки) -->
     <section id="step-positive" class="step">
       <p class="subtitle">Выберите удобный сервис, чтобы оставить отзыв:</p>
       
-      <!-- Обратите внимание: здесь теперь файлы .png -->
       <a id="btn-yandex" href="#" target="_blank" rel="noopener" class="platform-btn">
-        <img src="IMG_2623.png" alt="" class="platform-icon">
+        <img src="location-3d-icon-illustration-free-png-removebg-preview.png" alt="" class="platform-icon">
         Яндекс Карты
       </a>
       
       <a id="btn-2gis" href="#" target="_blank" rel="noopener" class="platform-btn">
-        <img src="IMG_2624.png" alt="" class="platform-icon">
+        <img src="IMG_2624-removebg-preview-removebg-preview.png" alt="" class="platform-icon">
         2ГИС
       </a>
       
       <a id="btn-google" href="#" target="_blank" rel="noopener" class="platform-btn">
-        <img src="IMG_2625.png" alt="" class="platform-icon">
+        <img src="google-map-logo-3d-google-map-logo-free-png-removebg-preview.png" alt="" class="platform-icon">
         Google Maps
       </a>
       
       <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
     </section>
 
-    <!-- ШАГ 3: Отрицательный отзыв (Связь) -->
     <section id="step-negative" class="step">
       <p class="subtitle">Нам очень жаль. Напишите руководителю напрямую — мы всё исправим.</p>
       
