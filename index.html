@@ -3,18 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#f5f5f7" />
+  <meta name="theme-color" content="#f2f2f7" />
   <title>Оставьте отзыв</title>
   <style>
     :root {
-      --bg: #f5f5f7;
-      --card: rgba(255, 255, 255, 0.92);
+      /* Легкие и воздушные цвета */
+      --bg: #f2f2f7;
+      --card: #ffffff;
       --text: #1d1d1f;
       --secondary: #86868b;
-      --line: rgba(0, 0, 0, 0.08);
+      
+      /* Цвета для кнопок из макета */
+      --green-bg: #e8f5e9;
+      --green-text: #2e7d32;
+      --orange-bg: #fff0e5;
+      --orange-text: #d84315;
+      
+      --blue-light: #eaf2ff;
       --blue: #007aff;
-      --green: #34c759;
-      --red: #ff3b30;
     }
 
     * {
@@ -39,167 +45,212 @@
     .container {
       width: 100%;
       max-width: 390px;
-      padding: 38px 28px 26px;
+      padding: 40px 24px 32px;
       text-align: center;
       background: var(--card);
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      border-radius: 28px;
-      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.07), 0 2px 8px rgba(0, 0, 0, 0.03);
+      border-radius: 32px;
+      /* Мягкая, воздушная тень */
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.02);
       animation: appear 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
+    /* Иконка сердечка наверху */
     .icon-badge {
-      width: 56px;
-      height: 56px;
+      width: 64px;
+      height: 64px;
       display: grid;
       place-items: center;
-      margin: 0 auto 22px;
-      color: var(--blue);
-      background: #eaf3ff;
-      border-radius: 18px;
-    }
-
-    .icon-badge svg {
-      width: 25px;
-      height: 25px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+      margin: 0 auto 24px;
+      background: var(--blue-light);
+      border-radius: 20px;
+      font-size: 28px;
+      /* Легкая тень для самой иконки */
+      box-shadow: inset 0 0 0 1px rgba(0, 122, 255, 0.1);
     }
 
     .client-title {
       max-width: 300px;
-      margin: 0 auto 9px;
-      font-size: clamp(23px, 6vw, 28px);
-      line-height: 1.12;
-      letter-spacing: -0.7px;
+      margin: 0 auto 12px;
+      font-size: clamp(24px, 6vw, 28px);
+      line-height: 1.2;
+      letter-spacing: -0.5px;
       font-weight: 700;
     }
 
-    .step { display: none; }
-
-    .step.active {
-      display: block;
-      animation: step-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-
     .subtitle {
-      margin-bottom: 26px;
+      margin-bottom: 28px;
       color: var(--secondary);
-      font-size: 15px;
-      line-height: 1.45;
+      font-size: 16px;
+      line-height: 1.4;
       letter-spacing: -0.1px;
     }
 
-    .btn-main,
-    .platform-btn {
-      width: 100%;
-      min-height: 54px;
+    .step { display: none; }
+    .step.active {
+      display: block;
+      animation: step-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* Сетка для кнопок отзывов (как в закрепе) */
+    .feedback-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .btn-feedback {
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      border: 0;
-      border-radius: 15px;
+      padding: 28px 12px;
+      border: none;
+      border-radius: 24px;
       font-size: 16px;
       font-weight: 600;
-      text-decoration: none;
+      line-height: 1.3;
       cursor: pointer;
-      transition: transform 0.18s ease, filter 0.18s ease, background 0.18s ease;
+      transition: transform 0.2s ease, filter 0.2s ease;
     }
 
-    .btn-main + .btn-main,
-    .platform-btn + .platform-btn { margin-top: 10px; }
+    .btn-feedback:active { transform: scale(0.95); }
+    .btn-feedback:hover { filter: brightness(0.96); }
 
-    .btn-main:active,
-    .platform-btn:active,
-    .btn-back:active { transform: scale(0.975); }
+    .btn-feedback .emoji {
+      font-size: 38px;
+      margin-bottom: 12px;
+      /* Добавляем 3D-эффект эмодзи через тень */
+      filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.15));
+    }
 
     .btn-positive {
-      color: #fff;
-      background: var(--green);
-      box-shadow: 0 7px 16px rgba(52, 199, 89, 0.2);
+      background: var(--green-bg);
+      color: var(--green-text);
     }
-
-    .btn-positive:hover { filter: brightness(0.97); }
 
     .btn-negative {
-      color: var(--text);
-      background: #e9e9ee;
+      background: var(--orange-bg);
+      color: var(--orange-text);
     }
 
-    .btn-negative:hover { background: #dedee3; }
-
+    /* Кнопки площадок с 3D иконками */
     .platform-btn {
-      min-height: 52px;
-      color: #fff;
-      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
+      width: 100%;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      margin-bottom: 12px;
+      background: #ffffff;
+      border: 1.5px solid #f2f2f7;
+      border-radius: 20px;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
     }
 
-    .platform-btn:hover { filter: brightness(0.96); }
-    .btn-yandex { background: var(--red); }
-    .btn-2gis { background: #20a900; }
-    .btn-google { background: var(--blue); }
-    .btn-telegram { background: #0a9bd8; }
+    .platform-btn:hover {
+      border-color: #e5e5ea;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+    }
+    
+    .platform-btn:active { transform: scale(0.98) translateY(0); }
 
+    .platform-icon {
+      width: 40px;
+      height: 40px;
+      margin-right: 16px;
+      object-fit: contain;
+    }
+
+    /* Кнопка "Назад" */
     .btn-back {
-      margin-top: 20px;
-      padding: 5px 10px;
-      color: var(--blue);
-      background: transparent;
+      margin-top: 16px;
+      padding: 12px 24px;
+      color: var(--secondary);
+      background: #f2f2f7;
+      border-radius: 100px;
       border: 0;
       font-size: 15px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
-      transition: opacity 0.18s ease, transform 0.18s ease;
+      transition: background 0.2s ease, color 0.2s ease;
     }
 
-    .btn-back:hover { opacity: 0.7; }
+    .btn-back:hover {
+      background: #e5e5ea;
+      color: var(--text);
+    }
 
     @keyframes appear {
-      from { opacity: 0; transform: translateY(12px) scale(0.985); }
+      from { opacity: 0; transform: translateY(16px) scale(0.97); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     @keyframes step-in {
-      from { opacity: 0; transform: translateY(6px); }
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
 <body>
   <main class="container">
-    <div class="icon-badge" aria-hidden="true">
-      <svg viewBox="0 0 24 24">
-        <path d="M12 20.2S4.5 15.8 4.5 9.8A4.3 4.3 0 0 1 12 7.1a4.3 4.3 0 0 1 7.5 2.7c0 6-7.5 10.4-7.5 10.4Z" />
-        <path d="M8.4 11.2h.01M15.6 11.2h.01M9.5 14.4c1.6 1 3.4 1 5 0" />
-      </svg>
-    </div>
+    <!-- Синее сердечко как на скрине -->
+    <div class="icon-badge" aria-hidden="true">💙</div>
 
     <h1 class="client-title" id="client-name">Загрузка...</h1>
 
+    <!-- ШАГ 1: Оценка -->
     <section id="step-1" class="step active">
       <p class="subtitle">Вам всё понравилось при посещении?</p>
-      <button class="btn-main btn-positive" onclick="goToStep('step-positive')">Да, всё отлично</button>
-      <button class="btn-main btn-negative" onclick="goToStep('step-negative')">Есть замечания</button>
+      
+      <div class="feedback-grid">
+        <button class="btn-feedback btn-positive" onclick="goToStep('step-positive')">
+          <span class="emoji">😊</span>
+          <span>Да, всё<br>отлично</span>
+        </button>
+        <button class="btn-feedback btn-negative" onclick="goToStep('step-negative')">
+          <span class="emoji">🙁</span>
+          <span>Есть<br>замечания</span>
+        </button>
+      </div>
     </section>
 
+    <!-- ШАГ 2: Положительный отзыв (Площадки) -->
     <section id="step-positive" class="step">
       <p class="subtitle">Выберите удобный сервис, чтобы оставить отзыв:</p>
-      <a id="btn-yandex" href="#" target="_blank" rel="noopener" class="platform-btn btn-yandex">Яндекс Карты</a>
-      <a id="btn-2gis" href="#" target="_blank" rel="noopener" class="platform-btn btn-2gis">2ГИС</a>
-      <a id="btn-google" href="#" target="_blank" rel="noopener" class="platform-btn btn-google">Google Maps</a>
+      
+      <!-- Используем ваши картинки -->
+      <a id="btn-yandex" href="#" target="_blank" rel="noopener" class="platform-btn">
+        <img src="IMG_2623.JPG" alt="Yandex" class="platform-icon">
+        Яндекс Карты
+      </a>
+      
+      <a id="btn-2gis" href="#" target="_blank" rel="noopener" class="platform-btn">
+        <img src="IMG_2624.JPG" alt="2GIS" class="platform-icon">
+        2ГИС
+      </a>
+      
+      <a id="btn-google" href="#" target="_blank" rel="noopener" class="platform-btn">
+        <img src="IMG_2625.JPG" alt="Google" class="platform-icon">
+        Google Maps
+      </a>
+      
       <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
     </section>
 
+    <!-- ШАГ 3: Отрицательный отзыв (Связь) -->
     <section id="step-negative" class="step">
       <p class="subtitle">Нам очень жаль. Напишите руководителю напрямую — мы всё исправим.</p>
-      <a id="btn-telegram" href="#" target="_blank" rel="noopener" class="platform-btn btn-telegram">Написать в Telegram</a>
+      
+      <a id="btn-telegram" href="#" target="_blank" rel="noopener" class="platform-btn" style="justify-content: center; background: #0088cc; color: white; border: none;">
+        Написать в Telegram
+      </a>
+      
       <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
     </section>
   </main>
