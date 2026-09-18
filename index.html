@@ -210,6 +210,7 @@
       </div>
     </section>
 
+    <!-- Положительный отзыв -->
     <section id="step-positive" class="step">
       <p class="subtitle">Выберите удобный сервис, чтобы оставить отзыв:</p>
       
@@ -231,9 +232,18 @@
       <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
     </section>
 
+    <!-- Отрицательный отзыв: теперь 3 умные кнопки -->
     <section id="step-negative" class="step">
       <p class="subtitle">Нам очень жаль. Напишите руководителю напрямую — мы всё исправим.</p>
       
+      <a id="btn-phone" href="#" class="platform-btn" style="background: #1d1d1f; color: white; border: none;">
+        Позвонить
+      </a>
+      
+      <a id="btn-whatsapp" href="#" target="_blank" rel="noopener" class="platform-btn" style="background: #25D366; color: white; border: none;">
+        Написать в WhatsApp
+      </a>
+
       <a id="btn-telegram" href="#" target="_blank" rel="noopener" class="platform-btn" style="background: #0088cc; color: white; border: none;">
         Написать в Telegram
       </a>
@@ -269,7 +279,7 @@
           const setPlatform = (btnId, url) => {
             const btn = document.getElementById(btnId);
             if (btn) {
-              if (url && url.trim() !== '' && url !== '#') {
+              if (url && url.trim() !== '' && url !== '#' && url !== '-' && url !== 'null') {
                 btn.href = url;
                 btn.style.display = 'flex';
               } else {
@@ -278,9 +288,13 @@
             }
           };
 
+          // Привязываем все 6 кнопок к данным
           setPlatform('btn-yandex', client.yandex);
           setPlatform('btn-2gis', client.gis2);
           setPlatform('btn-google', client.google);
+          
+          setPlatform('btn-phone', client.phone);
+          setPlatform('btn-whatsapp', client.whatsapp);
           setPlatform('btn-telegram', client.telegram);
         })
         .catch(error => {
