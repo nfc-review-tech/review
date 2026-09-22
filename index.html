@@ -228,8 +228,6 @@
         <img src="google-map-logo-3d-google-map-logo-free-png-removebg-preview.png" alt="" class="platform-icon">
         Google Maps
       </a>
-      
-      <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
     </section>
 
     <!-- Отрицательный отзыв: 4 способа связи -->
@@ -257,7 +255,6 @@
   </main>
 
   <script>
-    // Теперь дефолтная фраза на первом экране — "Спасибо за визит!"
     let companyName = 'Спасибо за визит!';
 
     function goToStep(stepId) {
@@ -291,7 +288,6 @@
             return;
           }
 
-          // Если в JSON есть name, выведется он. Если нет — выведется "Спасибо за визит!"
           companyName = client.name || 'Спасибо за визит!';
           document.getElementById('client-name').textContent = companyName;
 
