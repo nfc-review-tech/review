@@ -257,9 +257,22 @@
   </main>
 
   <script>
+    // Теперь дефолтная фраза на первом экране — "Спасибо за визит!"
+    let companyName = 'Спасибо за визит!';
+
     function goToStep(stepId) {
       document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
       document.getElementById(stepId).classList.add('active');
+
+      const titleElement = document.getElementById('client-name');
+      
+      if (stepId === 'step-1') {
+        titleElement.textContent = companyName;
+      } else if (stepId === 'step-positive') {
+        titleElement.textContent = 'Спасибо за доверие!';
+      } else if (stepId === 'step-negative') {
+        titleElement.textContent = 'Служба заботы';
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -278,7 +291,9 @@
             return;
           }
 
-          document.getElementById('client-name').textContent = client.name || 'Оцените нашу работу';
+          // Если в JSON есть name, выведется он. Если нет — выведется "Спасибо за визит!"
+          companyName = client.name || 'Спасибо за визит!';
+          document.getElementById('client-name').textContent = companyName;
 
           const setPlatform = (btnId, url) => {
             const btn = document.getElementById(btnId);
@@ -292,7 +307,6 @@
             }
           };
 
-          // Привязываем кнопки к базе данных
           setPlatform('btn-yandex', client.yandex);
           setPlatform('btn-2gis', client.gis2);
           setPlatform('btn-google', client.google);
