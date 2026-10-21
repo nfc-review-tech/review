@@ -78,7 +78,10 @@
       letter-spacing: -0.1px;
     }
 
-    .step { display: none; }
+    .step {
+      display: none;
+    }
+
     .step.active {
       display: block;
       animation: step-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -105,8 +108,13 @@
       transition: transform 0.2s ease, filter 0.2s ease;
     }
 
-    .btn-feedback:active { transform: scale(0.95); }
-    .btn-feedback:hover { filter: brightness(0.96); }
+    .btn-feedback:active {
+      transform: scale(0.95);
+    }
+
+    .btn-feedback:hover {
+      filter: brightness(0.96);
+    }
 
     .btn-feedback .emoji {
       font-size: 38px;
@@ -149,8 +157,10 @@
       transform: translateY(-2px);
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
     }
-    
-    .platform-btn:active { transform: scale(0.98) translateY(0); }
+
+    .platform-btn:active {
+      transform: scale(0.98) translateY(0);
+    }
 
     .platform-icon {
       width: 40px;
@@ -232,17 +242,35 @@
       opacity: 0.9;
     }
 
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
     @keyframes appear {
-      from { opacity: 0; transform: translateY(16px) scale(0.97); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     @keyframes step-in {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
+
 <body>
   <main class="container">
     <div class="icon-badge" id="icon-badge" aria-hidden="true">💙</div>
@@ -252,12 +280,13 @@
     <!-- Шаг 1: Оценка -->
     <section id="step-1" class="step">
       <p class="subtitle">Поделитесь своими впечатлениями — это поможет нам стать лучше.</p>
-      
+
       <div class="feedback-grid">
         <button class="btn-feedback btn-positive" onclick="goToStep('step-positive')">
           <span class="emoji">😊</span>
           <span>Да, всё<br>отлично</span>
         </button>
+
         <button class="btn-feedback btn-negative" onclick="goToStep('step-negative')">
           <span class="emoji">🙁</span>
           <span>Есть<br>замечания</span>
@@ -265,20 +294,20 @@
       </div>
     </section>
 
-    <!-- Шаг 2: Положительный отзыв (Карты) -->
+    <!-- Шаг 2: Положительный отзыв -->
     <section id="step-positive" class="step">
       <p class="subtitle">Рады, что вам всё понравилось! Выберите удобную платформу для отзыва:</p>
-      
+
       <a id="btn-yandex" href="#" target="_blank" rel="noopener" class="platform-btn">
         <img src="location-3d-icon-illustration-free-png-removebg-preview.png" alt="" class="platform-icon">
         Яндекс Карты
       </a>
-      
+
       <a id="btn-2gis" href="#" target="_blank" rel="noopener" class="platform-btn">
         <img src="IMG_2624-removebg-preview-removebg-preview.png" alt="" class="platform-icon">
         2ГИС
       </a>
-      
+
       <a id="btn-google" href="#" target="_blank" rel="noopener" class="platform-btn">
         <img src="google-map-logo-3d-google-map-logo-free-png-removebg-preview.png" alt="" class="platform-icon">
         Google Maps
@@ -287,14 +316,14 @@
       <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
     </section>
 
-    <!-- Шаг 3: Отрицательный отзыв (Служба заботы) -->
+    <!-- Шаг 3: Служба заботы -->
     <section id="step-negative" class="step">
       <p class="subtitle">Нам очень жаль, что так вышло. Свяжитесь с нами напрямую, и мы всё исправим:</p>
-      
+
       <a id="btn-phone" href="#" class="platform-btn" style="background: #1d1d1f; color: white; border: none;">
         Позвонить
       </a>
-      
+
       <a id="btn-whatsapp" href="#" target="_blank" rel="noopener" class="platform-btn" style="background: #25D366; color: white; border: none;">
         Написать в WhatsApp
       </a>
@@ -306,64 +335,133 @@
       <a id="btn-email" href="#" class="platform-btn" style="background: #007aff; color: white; border: none;">
         Написать на почту
       </a>
-      
+
       <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
     </section>
 
-    <!-- Шаг 4: Первичная настройка стойки покупателем -->
+    <!-- Шаг 4: Первичная настройка стойки -->
     <section id="step-setup" class="step">
-      <p class="subtitle" style="margin-bottom: 20px;">Введите данные вашей организации для активации стойки:</p>
-      
+      <p class="subtitle" style="margin-bottom: 20px;">
+        Введите данные вашей организации для активации стойки:
+      </p>
+
       <form id="setup-form" class="setup-form" onsubmit="handleSetupSubmit(event)">
         <div class="form-group">
-          <label>Название заведения *</label>
-          <input type="text" id="setup-name" class="form-input" placeholder="Салон красоты «Аура»" required>
+          <label for="setup-name">Название заведения *</label>
+          <input
+            type="text"
+            id="setup-name"
+            class="form-input"
+            placeholder="Салон красоты «Аура»"
+            maxlength="160"
+            autocomplete="organization"
+            required
+          >
         </div>
 
         <div class="form-group">
-          <label>Ссылка Яндекс Карты</label>
-          <input type="url" id="setup-yandex" class="form-input" placeholder="https://yandex.ru/maps/...">
+          <label for="setup-yandex">Ссылка Яндекс Карты</label>
+          <input
+            type="url"
+            id="setup-yandex"
+            class="form-input"
+            placeholder="https://yandex.ru/maps/..."
+          >
         </div>
 
         <div class="form-group">
-          <label>Ссылка 2ГИС</label>
-          <input type="url" id="setup-2gis" class="form-input" placeholder="https://2gis.ru/...">
+          <label for="setup-2gis">Ссылка 2ГИС</label>
+          <input
+            type="url"
+            id="setup-2gis"
+            class="form-input"
+            placeholder="https://2gis.ru/..."
+          >
         </div>
 
         <div class="form-group">
-          <label>Ссылка Google Maps</label>
-          <input type="url" id="setup-google" class="form-input" placeholder="https://maps.app.goo.gl/...">
+          <label for="setup-google">Ссылка Google Maps</label>
+          <input
+            type="url"
+            id="setup-google"
+            class="form-input"
+            placeholder="https://maps.app.goo.gl/..."
+          >
         </div>
 
         <div class="form-group">
-          <label>Ссылка на WhatsApp</label>
-          <input type="url" id="setup-whatsapp" class="form-input" placeholder="https://wa.me/79991234567">
+          <label for="setup-whatsapp">Ссылка на WhatsApp</label>
+          <input
+            type="url"
+            id="setup-whatsapp"
+            class="form-input"
+            placeholder="https://wa.me/79991234567"
+          >
         </div>
 
         <div class="form-group">
-          <label>Ссылка на Telegram</label>
-          <input type="url" id="setup-telegram" class="form-input" placeholder="https://t.me/username">
+          <label for="setup-telegram">Ссылка на Telegram</label>
+          <input
+            type="url"
+            id="setup-telegram"
+            class="form-input"
+            placeholder="https://t.me/username"
+          >
         </div>
 
-        <button type="submit" id="setup-submit-btn" class="btn-primary">Сохранить и активировать</button>
+        <div class="form-group">
+          <label for="setup-phone">Телефон для обратной связи</label>
+          <input
+            type="tel"
+            id="setup-phone"
+            class="form-input"
+            placeholder="+7 999 123-45-67"
+            autocomplete="tel"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="setup-email">Электронная почта</label>
+          <input
+            type="email"
+            id="setup-email"
+            class="form-input"
+            placeholder="hello@example.com"
+            autocomplete="email"
+          >
+        </div>
+
+        <button type="submit" id="setup-submit-btn" class="btn-primary">
+          Сохранить и активировать
+        </button>
       </form>
     </section>
   </main>
 
   <script>
+    // Параметры подключения к вашему проекту Supabase.
+    // Publishable key предназначен для использования в браузере.
     const SUPABASE_URL = 'https://upwyxihwrvupgirahvvp.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_h-zAOvGJDvNFbQDeMURvXg_GJTB_Sqw';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_h-zAOvGJDvNFbQDeMURvXg_GJTB_Sqw';
 
     let companyName = 'Спасибо за визит!';
     let currentClientId = null;
 
+    const supabaseHeaders = {
+      'apikey': SUPABASE_PUBLISHABLE_KEY,
+      'Content-Type': 'application/json'
+    };
+
     function goToStep(stepId) {
-      document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+      document.querySelectorAll('.step').forEach(step => {
+        step.classList.remove('active');
+      });
+
       document.getElementById(stepId).classList.add('active');
 
       const titleElement = document.getElementById('client-name');
       const badgeElement = document.getElementById('icon-badge');
-      
+
       if (stepId === 'step-1') {
         titleElement.textContent = companyName;
         badgeElement.textContent = '💙';
@@ -381,14 +479,33 @@
 
     function setPlatform(btnId, url) {
       const btn = document.getElementById(btnId);
-      if (btn) {
-        if (url && url.trim() !== '' && url !== '#' && url !== '-' && url !== 'null') {
-          btn.href = url;
-          btn.style.display = 'flex';
-        } else {
-          btn.style.display = 'none';
-        }
+      if (!btn) return;
+
+      if (
+        typeof url === 'string' &&
+        url.trim() !== '' &&
+        url !== '#' &&
+        url !== '-' &&
+        url !== 'null'
+      ) {
+        btn.href = url.trim();
+        btn.style.display = 'flex';
+      } else {
+        btn.removeAttribute('href');
+        btn.style.display = 'none';
       }
+    }
+
+    function hideAllPlatforms() {
+      [
+        'btn-yandex',
+        'btn-2gis',
+        'btn-google',
+        'btn-phone',
+        'btn-whatsapp',
+        'btn-telegram',
+        'btn-email'
+      ].forEach(id => setPlatform(id, ''));
     }
 
     function renderClientCard(client) {
@@ -398,100 +515,207 @@
       setPlatform('btn-yandex', client.yandex);
       setPlatform('btn-2gis', client.gis2);
       setPlatform('btn-google', client.google);
-      
+
       setPlatform('btn-phone', client.phone);
       setPlatform('btn-whatsapp', client.whatsapp);
       setPlatform('btn-telegram', client.telegram);
       setPlatform('btn-email', client.email);
     }
 
+    async function callSupabaseFunction(functionName, payload) {
+      const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/rpc/${functionName}`,
+        {
+          method: 'POST',
+          headers: supabaseHeaders,
+          body: JSON.stringify(payload)
+        }
+      );
+
+      const responseText = await response.text();
+      let result = null;
+
+      if (responseText) {
+        try {
+          result = JSON.parse(responseText);
+        } catch {
+          result = responseText;
+        }
+      }
+
+      if (!response.ok) {
+        console.error(
+          `Supabase ${functionName} error:`,
+          response.status,
+          result
+        );
+
+        throw new Error(
+          `Supabase запрос не выполнен (${response.status}). Проверьте SQL-функции и настройки проекта.`
+        );
+      }
+
+      return result;
+    }
+
+    function getFriendlyActivationError(code) {
+      const messages = {
+        INVALID_ID: 'Неверный ID метки. Проверьте ссылку NFC.',
+        INVALID_NAME: 'Введите название заведения.',
+        INVALID_URL: 'Одна из ссылок заполнена неверно. Вставляйте полную ссылку, начинающуюся с https://',
+        INVALID_PHONE: 'Проверьте номер телефона.',
+        INVALID_EMAIL: 'Проверьте адрес электронной почты.',
+        ALREADY_ACTIVATED: 'Эта метка уже активирована.'
+      };
+
+      return messages[code] ||
+        'Не удалось сохранить настройки. Проверьте подключение и попробуйте снова.';
+    }
+
+    async function loadClient() {
+      const client = await callSupabaseFunction('nfc_get_client', {
+        p_id: currentClientId
+      });
+
+      if (!client) {
+        hideAllPlatforms();
+        goToStep('step-setup');
+        return false;
+      }
+
+      renderClientCard(client);
+      goToStep('step-1');
+      return true;
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
-      currentClientId = new URLSearchParams(window.location.search).get('id')?.trim() || null;
+      hideAllPlatforms();
+
+      currentClientId =
+        new URLSearchParams(window.location.search).get('id')?.trim() || null;
 
       if (!currentClientId) {
-        document.getElementById('client-name').textContent = 'Метка не распознана';
+        document.getElementById('client-name').textContent =
+          'Метка не распознана';
+        return;
+      }
+
+      // ID должен быть случайным токеном длиной от 24 до 100 символов.
+      if (!/^[A-Za-z0-9_-]{24,100}$/.test(currentClientId)) {
+        document.getElementById('client-name').textContent =
+          'Нужен корректный ID метки';
         return;
       }
 
       try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/stands?id=eq.${encodeURIComponent(currentClientId)}`, {
-          headers: {
-            'apikey': SUPABASE_ANON_KEY,
-            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-          }
-        });
-
-        if (!response.ok) throw new Error('Ошибка сервера');
-
-        const data = await response.json();
-
-        if (!data || data.length === 0) {
-          document.getElementById('client-name').textContent = 'Недействительная метка';
-          return;
-        }
-
-        const stand = data[0];
-
-        if (!stand.is_active) {
-          goToStep('step-setup');
-          return;
-        }
-
-        renderClientCard(stand);
-        goToStep('step-1');
-
+        await loadClient();
       } catch (error) {
         console.error(error);
-        document.getElementById('client-name').textContent = 'Ошибка загрузки';
+
+        document.querySelectorAll('.step').forEach(step => {
+          step.classList.remove('active');
+        });
+
+        document.getElementById('client-name').textContent =
+          'Ошибка загрузки';
+
+        document.getElementById('icon-badge').textContent = '⚠️';
+
+        alert(
+          'Не удалось подключиться к базе. Проверьте URL и публичный ключ Supabase, а также выполненный SQL-код.'
+        );
       }
     });
+
+    function normalizePhone(value) {
+      const raw = value.trim();
+      if (!raw) return '';
+
+      return raw.toLowerCase().startsWith('tel:')
+        ? raw
+        : `tel:${raw}`;
+    }
+
+    function normalizeEmail(value) {
+      const raw = value.trim();
+      if (!raw) return '';
+
+      return raw.toLowerCase().startsWith('mailto:')
+        ? raw
+        : `mailto:${raw}`;
+    }
 
     async function handleSetupSubmit(event) {
       event.preventDefault();
 
       const submitBtn = document.getElementById('setup-submit-btn');
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Активация...';
+      submitBtn.textContent = 'Сохранение...';
 
-      const updateData = {
+      const phoneValue =
+        document.getElementById('setup-phone').value.trim();
+
+      const emailValue =
+        document.getElementById('setup-email').value.trim();
+
+      const clientConfig = {
+        id: currentClientId,
         name: document.getElementById('setup-name').value.trim(),
         yandex: document.getElementById('setup-yandex').value.trim(),
         gis2: document.getElementById('setup-2gis').value.trim(),
         google: document.getElementById('setup-google').value.trim(),
         whatsapp: document.getElementById('setup-whatsapp').value.trim(),
         telegram: document.getElementById('setup-telegram').value.trim(),
-        is_active: true,
-        activated_at: new Date().toISOString()
+        phone: normalizePhone(phoneValue),
+        email: normalizeEmail(emailValue)
+      };
+
+      const payload = {
+        p_id: clientConfig.id,
+        p_name: clientConfig.name,
+        p_yandex: clientConfig.yandex,
+        p_gis2: clientConfig.gis2,
+        p_google: clientConfig.google,
+        p_whatsapp: clientConfig.whatsapp,
+        p_telegram: clientConfig.telegram,
+        p_phone: clientConfig.phone,
+        p_email: clientConfig.email
       };
 
       try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/stands?id=eq.${encodeURIComponent(currentClientId)}`, {
-          method: 'PATCH',
-          headers: {
-            'apikey': SUPABASE_ANON_KEY,
-            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=representation'
-          },
-          body: JSON.stringify(updateData)
-        });
+        const result = await callSupabaseFunction(
+          'nfc_activate_client',
+          payload
+        );
 
-        if (response.ok) {
-          const updatedRows = await response.json();
-          if (updatedRows && updatedRows.length > 0) {
-            renderClientCard(updateData);
-            goToStep('step-1');
-          } else {
-            alert('Эта метка уже была активирована ранее.');
-          }
-        } else {
-          alert('Ошибка при сохранении. Попробуйте еще раз.');
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Сохранить и активировать';
+        if (result && result.ok === true) {
+          // Показываем готовую страницу сразу после сохранения.
+          // Повторно прикладывать NFC-метку не требуется.
+          renderClientCard(clientConfig);
+          goToStep('step-1');
+          return;
         }
-      } catch (err) {
-        console.error(err);
-        alert('Ошибка сети.');
+
+        if (result && result.code === 'ALREADY_ACTIVATED') {
+          alert(
+            'Эта метка уже активирована. Сейчас загрузим сохранённые настройки.'
+          );
+
+          await loadClient();
+          return;
+        }
+
+        alert(
+          getFriendlyActivationError(result && result.code)
+        );
+      } catch (error) {
+        console.error(error);
+
+        alert(
+          error.message ||
+          'Ошибка сети при сохранении. Попробуйте ещё раз.'
+        );
+      } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Сохранить и активировать';
       }
