@@ -178,6 +178,61 @@
       color: var(--text);
     }
 
+    /* Стили для формы настройки */
+    .setup-form {
+      text-align: left;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid #e5e5ea;
+      border-radius: 14px;
+      font-size: 15px;
+      background: #fafafa;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .form-input:focus {
+      border-color: var(--blue);
+      background: #ffffff;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      margin-top: 12px;
+      background: var(--blue);
+      color: #ffffff;
+      border: none;
+      border-radius: 16px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+
     @keyframes appear {
       from { opacity: 0; transform: translateY(16px) scale(0.97); }
       to { opacity: 1; transform: translateY(0) scale(1); }
@@ -191,10 +246,11 @@
 </head>
 <body>
   <main class="container">
-    <div class="icon-badge" aria-hidden="true">💙</div>
+    <div class="icon-badge" id="icon-badge" aria-hidden="true">💙</div>
 
     <h1 class="client-title" id="client-name">Загрузка...</h1>
 
+    <!-- Шаг 1: Главный выбор -->
     <section id="step-1" class="step active">
       <p class="subtitle">Поделитесь своими впечатлениями — это поможет нам стать лучше.</p>
       
@@ -210,7 +266,7 @@
       </div>
     </section>
 
-    <!-- Положительный отзыв: Карты -->
+    <!-- Шаг 2: Положительный отзыв -->
     <section id="step-positive" class="step">
       <p class="subtitle">Рады, что вам всё понравилось! Выберите удобную платформу для отзыва:</p>
       
@@ -228,9 +284,11 @@
         <img src="google-map-logo-3d-google-map-logo-free-png-removebg-preview.png" alt="" class="platform-icon">
         Google Maps
       </a>
+
+      <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
     </section>
 
-    <!-- Отрицательный отзыв: 4 способа связи -->
+    <!-- Шаг 3: Отрицательный отзыв -->
     <section id="step-negative" class="step">
       <p class="subtitle">Нам очень жаль, что так вышло. Свяжитесь с нами напрямую, и мы всё исправим:</p>
       
@@ -252,28 +310,80 @@
       
       <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
     </section>
+
+    <!-- Шаг 4: Мастер Активации / Настройки (для нового покупателя) -->
+    <section id="step-setup" class="step">
+      <p class="subtitle" style="margin-bottom: 20px;">Введите данные вашего заведения для активации NFC-стойки:</p>
+      
+      <form id="setup-form" class="setup-form" onsubmit="handleSetupSubmit(event)">
+        <div class="form-group">
+          <label>Название заведения *</label>
+          <input type="text" id="setup-name" class="form-input" placeholder="например, Салон красоты «Аура»" required>
+        </div>
+
+        <div class="form-group">
+          <label>Ссылка Яндекс Карты</label>
+          <input type="url" id="setup-yandex" class="form-input" placeholder="https://yandex.ru/maps/...">
+        </div>
+
+        <div class="form-group">
+          <label>Ссылка 2ГИС</label>
+          <input type="url" id="setup-2gis" class="form-input" placeholder="https://2gis.ru/...">
+        </div>
+
+        <div class="form-group">
+          <label>Ссылка Google Maps</label>
+          <input type="url" id="setup-google" class="form-input" placeholder="https://maps.app.goo.gl/...">
+        </div>
+
+        <div class="form-group">
+          <label>WhatsApp для жалоб</label>
+          <input type="tel" id="setup-whatsapp" class="form-input" placeholder="https://wa.me/79991234567">
+        </div>
+
+        <div class="form-group">
+          <label>Telegram для жалоб</label>
+          <input type="text" id="setup-telegram" class="form-input" placeholder="https://t.me/username">
+        </div>
+
+        <button type="submit" class="btn-primary">Активировать метку</button>
+      </form>
+    </section>
   </main>
 
   <script>
     let companyName = 'Спасибо за визит!';
+    let currentClientId = null;
 
     function goToStep(stepId) {
       document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
       document.getElementById(stepId).classList.add('active');
 
       const titleElement = document.getElementById('client-name');
+      const badgeElement = document.getElementById('icon-badge');
       
       if (stepId === 'step-1') {
         titleElement.textContent = companyName;
+        badgeElement.textContent = '💙';
       } else if (stepId === 'step-positive') {
         titleElement.textContent = 'Спасибо за доверие!';
+        badgeElement.textContent = '⭐';
       } else if (stepId === 'step-negative') {
         titleElement.textContent = 'Служба заботы';
+        badgeElement.textContent = '💬';
+      } else if (stepId === 'step-setup') {
+        titleElement.textContent = 'Настройка стойки';
+        badgeElement.textContent = '⚙️';
       }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      const clientId = new URLSearchParams(window.location.search).get('id')?.trim() || null;
+      currentClientId = new URLSearchParams(window.location.search).get('id')?.trim() || null;
+
+      if (!currentClientId) {
+        document.getElementById('client-name').textContent = 'Метка не распознана';
+        return;
+      }
 
       fetch('./clients.json?v=' + Date.now(), { cache: 'no-store' })
         .then(response => {
@@ -281,13 +391,15 @@
           return response.json();
         })
         .then(data => {
-          let client = clientId ? data[clientId] : data[Object.keys(data)[0]];
+          let client = data[currentClientId];
 
+          // Если ID нет в базе -> Переключаем на экран первичной настройки
           if (!client) {
-            document.getElementById('client-name').textContent = 'Заведение не найдено';
+            goToStep('step-setup');
             return;
           }
 
+          // Если клиент есть -> инициализируем обычную страницу отзыва
           companyName = client.name || 'Спасибо за визит!';
           document.getElementById('client-name').textContent = companyName;
 
@@ -314,9 +426,40 @@
         })
         .catch(error => {
           console.error(error);
-          document.getElementById('client-name').textContent = 'Ошибка базы данных';
+          document.getElementById('client-name').textContent = 'Ошибка загрузки';
         });
     });
+
+    // Обработка сохранения данных покупателем
+    function handleSetupSubmit(event) {
+      event.preventDefault();
+
+      const newConfig = {
+        id: currentClientId,
+        name: document.getElementById('setup-name').value.trim(),
+        yandex: document.getElementById('setup-yandex').value.trim(),
+        gis2: document.getElementById('setup-2gis').value.trim(),
+        google: document.getElementById('setup-google').value.trim(),
+        whatsapp: document.getElementById('setup-whatsapp').value.trim(),
+        telegram: document.getElementById('setup-telegram').value.trim()
+      };
+
+      // ЗДЕСЬ ОТПРАВЛЯЮТСЯ ДАННЫЕ (выберите один из удобных вариантов ниже):
+      
+      // Вариант А: Сохранение через вебхук (n8n / Webhook / Supabase API)
+      /*
+      fetch('https://your-api-endpoint.com/save-client', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newConfig)
+      })
+      .then(() => location.reload());
+      */
+
+      // Временное подтверждение (демо):
+      alert('Данные сохранены! Метка успешно активирована.');
+      location.reload();
+    }
   </script>
 </body>
 </html>
