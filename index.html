@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#f2f2f7" />
   <title>Оставьте отзыв</title>
+
   <style>
     :root {
       --bg: #f2f2f7;
@@ -23,7 +24,8 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+        "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -45,7 +47,8 @@
       text-align: center;
       background: var(--card);
       border-radius: 32px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.02);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05),
+        0 4px 12px rgba(0, 0, 0, 0.02);
       animation: appear 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
@@ -247,6 +250,86 @@
       cursor: wait;
     }
 
+    .form-help {
+      margin-top: 7px;
+      color: var(--secondary);
+      font-size: 13px;
+      line-height: 1.45;
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 400;
+    }
+
+    textarea.form-input {
+      display: block;
+      min-height: 72px;
+      resize: vertical;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .review-warning {
+      margin: 0 0 18px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #fff4e5;
+      color: #7a4b00;
+      font-size: 14px;
+      line-height: 1.45;
+      text-align: left;
+    }
+
+    .review-list {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .review-row {
+      padding: 13px 14px;
+      border: 1px solid #e5e5ea;
+      border-radius: 14px;
+      background: #fafafa;
+      overflow-wrap: anywhere;
+    }
+
+    .review-label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .review-value {
+      font-size: 15px;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .review-link {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 14px 16px;
+      margin-top: 10px;
+      border: 0;
+      border-radius: 16px;
+      background: #f2f2f7;
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
     @keyframes appear {
       from {
         opacity: 0;
@@ -339,113 +422,101 @@
       <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
     </section>
 
-    <!-- Шаг 4: Первичная настройка стойки -->
+    <!-- Шаг 4: Настройка стойки -->
     <section id="step-setup" class="step">
       <p class="subtitle" style="margin-bottom: 20px;">
-        Введите данные вашей организации для активации стойки:
+        Заполните данные организации. Перед активацией вы сможете проверить все ссылки.
       </p>
 
-      <form id="setup-form" class="setup-form" onsubmit="handleSetupSubmit(event)">
+      <form id="setup-form" class="setup-form" onsubmit="prepareSetupReview(event)">
         <div class="form-group">
           <label for="setup-name">Название заведения *</label>
-          <input
-            type="text"
-            id="setup-name"
-            class="form-input"
-            placeholder="Салон красоты «Аура»"
-            maxlength="160"
-            autocomplete="organization"
-            required
-          >
+          <input type="text" id="setup-name" class="form-input"
+                 placeholder="Салон красоты «Аура»" maxlength="160" required>
         </div>
 
         <div class="form-group">
-          <label for="setup-yandex">Ссылка Яндекс Карты</label>
-          <input
-            type="url"
-            id="setup-yandex"
-            class="form-input"
-            placeholder="https://yandex.ru/maps/..."
-          >
+          <label for="setup-yandex">Ссылка на Яндекс Карты</label>
+          <textarea id="setup-yandex" class="form-input" rows="2"
+                    placeholder="Вставьте ссылку на карточку заведения"></textarea>
+          <p class="form-help">Откройте карточку заведения в Яндекс Картах → «Поделиться» → скопируйте ссылку.</p>
         </div>
 
         <div class="form-group">
-          <label for="setup-2gis">Ссылка 2ГИС</label>
-          <input
-            type="url"
-            id="setup-2gis"
-            class="form-input"
-            placeholder="https://2gis.ru/..."
-          >
+          <label for="setup-2gis">Ссылка на 2ГИС</label>
+          <textarea id="setup-2gis" class="form-input" rows="2"
+                    placeholder="Вставьте ссылку на карточку заведения"></textarea>
+          <p class="form-help">Откройте карточку организации в 2ГИС → «Поделиться» → скопируйте ссылку. Длинную ссылку сокращать не нужно.</p>
         </div>
 
         <div class="form-group">
-          <label for="setup-google">Ссылка Google Maps</label>
-          <input
-            type="url"
-            id="setup-google"
-            class="form-input"
-            placeholder="https://maps.app.goo.gl/..."
-          >
+          <label for="setup-google">Ссылка на Google Maps</label>
+          <textarea id="setup-google" class="form-input" rows="2"
+                    placeholder="https://maps.app.goo.gl/... или длинная ссылка Google Maps"></textarea>
+          <p class="form-help">В Google Maps найдите своё заведение, откройте карточку → «Поделиться» → «Копировать ссылку». Не нужно искать ID вручную.</p>
         </div>
 
         <div class="form-group">
-          <label for="setup-whatsapp">Ссылка на WhatsApp</label>
-          <input
-            type="url"
-            id="setup-whatsapp"
-            class="form-input"
-            placeholder="https://wa.me/79991234567"
-          >
+          <label for="setup-whatsapp">Телефон WhatsApp</label>
+          <input type="tel" id="setup-whatsapp" class="form-input"
+                 placeholder="+7 981 700-33-43" autocomplete="tel">
+          <p class="form-help">Укажите номер с кодом страны. Ссылку WhatsApp мы создадим сами. Пример: +7 981 700-33-43.</p>
         </div>
 
         <div class="form-group">
-          <label for="setup-telegram">Ссылка на Telegram</label>
-          <input
-            type="url"
-            id="setup-telegram"
-            class="form-input"
-            placeholder="https://t.me/username"
-          >
+          <label for="setup-telegram">Имя пользователя Telegram</label>
+          <input type="text" id="setup-telegram" class="form-input"
+                 placeholder="@mybusiness или mybusiness" autocomplete="off">
+          <p class="form-help">Введите имя пользователя из профиля Telegram. Можно с символом @ или без него. Номер телефона сюда вводить не нужно.</p>
         </div>
 
         <div class="form-group">
-          <label for="setup-phone">Телефон для обратной связи</label>
-          <input
-            type="tel"
-            id="setup-phone"
-            class="form-input"
-            placeholder="+7 999 123-45-67"
-            autocomplete="tel"
-          >
+          <label for="setup-phone">Телефон для звонка (необязательно)</label>
+          <input type="tel" id="setup-phone" class="form-input"
+                 placeholder="+7 999 123-45-67" autocomplete="tel">
         </div>
 
         <div class="form-group">
-          <label for="setup-email">Электронная почта</label>
-          <input
-            type="email"
-            id="setup-email"
-            class="form-input"
-            placeholder="hello@example.com"
-            autocomplete="email"
-          >
+          <label for="setup-email">Электронная почта (необязательно)</label>
+          <input type="email" id="setup-email" class="form-input"
+                 placeholder="hello@example.com" autocomplete="email">
         </div>
 
-        <button type="submit" id="setup-submit-btn" class="btn-primary">
-          Сохранить и активировать
+        <button type="submit" id="setup-review-btn" class="btn-primary">
+          Проверить данные перед активацией
         </button>
       </form>
+    </section>
+
+    <!-- Шаг 5: Проверка ссылок перед сохранением -->
+    <section id="step-review" class="step">
+      <p class="subtitle">
+        Проверьте название и откройте ссылки ниже. Убедитесь, что каждая карта ведёт на ваше заведение.
+      </p>
+
+      <div class="review-warning">
+        Важно: после нажатия «Подтвердить и активировать» настройки сохранятся один раз. Сначала проверьте ссылки.
+      </div>
+
+      <div id="review-summary" class="review-list"></div>
+
+      <button type="button" class="btn-primary" id="confirm-activate-btn" onclick="activateClient()">
+        Всё верно — подтвердить и активировать
+      </button>
+
+      <button type="button" class="btn-secondary" onclick="goToStep('step-setup')">
+        Вернуться и исправить
+      </button>
     </section>
   </main>
 
   <script>
-    // Параметры подключения к вашему проекту Supabase.
-    // Publishable key предназначен для использования в браузере.
     const SUPABASE_URL = 'https://upwyxihwrvupgirahvvp.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_h-zAOvGJDvNFbQDeMURvXg_GJTB_Sqw';
 
     let companyName = 'Спасибо за визит!';
     let currentClientId = null;
+    let pendingClientConfig = null;
 
     const supabaseHeaders = {
       'apikey': SUPABASE_PUBLISHABLE_KEY,
@@ -474,6 +545,9 @@
       } else if (stepId === 'step-setup') {
         titleElement.textContent = 'Настройка стойки';
         badgeElement.textContent = '⚙️';
+      } else if (stepId === 'step-review') {
+        titleElement.textContent = 'Проверьте данные';
+        badgeElement.textContent = '🔎';
       }
     }
 
@@ -488,24 +562,11 @@
         url !== '-' &&
         url !== 'null'
       ) {
-        btn.href = url.trim();
+        btn.href = url;
         btn.style.display = 'flex';
       } else {
-        btn.removeAttribute('href');
         btn.style.display = 'none';
       }
-    }
-
-    function hideAllPlatforms() {
-      [
-        'btn-yandex',
-        'btn-2gis',
-        'btn-google',
-        'btn-phone',
-        'btn-whatsapp',
-        'btn-telegram',
-        'btn-email'
-      ].forEach(id => setPlatform(id, ''));
     }
 
     function renderClientCard(client) {
@@ -562,7 +623,7 @@
       const messages = {
         INVALID_ID: 'Неверный ID метки. Проверьте ссылку NFC.',
         INVALID_NAME: 'Введите название заведения.',
-        INVALID_URL: 'Одна из ссылок заполнена неверно. Вставляйте полную ссылку, начинающуюся с https://',
+        INVALID_URL: 'Одна из ссылок заполнена неверно. Вставьте полную ссылку, начинающуюся с https://',
         INVALID_PHONE: 'Проверьте номер телефона.',
         INVALID_EMAIL: 'Проверьте адрес электронной почты.',
         ALREADY_ACTIVATED: 'Эта метка уже активирована.'
@@ -572,24 +633,16 @@
         'Не удалось сохранить настройки. Проверьте подключение и попробуйте снова.';
     }
 
-    async function loadClient() {
-      const client = await callSupabaseFunction('nfc_get_client', {
-        p_id: currentClientId
-      });
-
-      if (!client) {
-        hideAllPlatforms();
-        goToStep('step-setup');
-        return false;
-      }
-
-      renderClientCard(client);
-      goToStep('step-1');
-      return true;
-    }
-
     document.addEventListener('DOMContentLoaded', async () => {
-      hideAllPlatforms();
+      [
+        'btn-yandex',
+        'btn-2gis',
+        'btn-google',
+        'btn-phone',
+        'btn-whatsapp',
+        'btn-telegram',
+        'btn-email'
+      ].forEach(id => setPlatform(id, ''));
 
       currentClientId =
         new URLSearchParams(window.location.search).get('id')?.trim() || null;
@@ -600,7 +653,6 @@
         return;
       }
 
-      // ID должен быть случайным токеном длиной от 24 до 100 символов.
       if (!/^[A-Za-z0-9_-]{24,100}$/.test(currentClientId)) {
         document.getElementById('client-name').textContent =
           'Нужен корректный ID метки';
@@ -608,18 +660,20 @@
       }
 
       try {
-        await loadClient();
-      } catch (error) {
-        console.error(error);
-
-        document.querySelectorAll('.step').forEach(step => {
-          step.classList.remove('active');
+        const client = await callSupabaseFunction('nfc_get_client', {
+          p_id: currentClientId
         });
 
-        document.getElementById('client-name').textContent =
-          'Ошибка загрузки';
+        if (!client) {
+          goToStep('step-setup');
+          return;
+        }
 
-        document.getElementById('icon-badge').textContent = '⚠️';
+        renderClientCard(client);
+        goToStep('step-1');
+      } catch (error) {
+        console.error(error);
+        document.getElementById('client-name').textContent = 'Ошибка загрузки';
 
         alert(
           'Не удалось подключиться к базе. Проверьте URL и публичный ключ Supabase, а также выполненный SQL-код.'
@@ -627,48 +681,259 @@
       }
     });
 
-    function normalizePhone(value) {
+    function readField(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    function normalizeMapUrl(value, label) {
       const raw = value.trim();
       if (!raw) return '';
 
-      return raw.toLowerCase().startsWith('tel:')
-        ? raw
-        : `tel:${raw}`;
+      let parsed;
+
+      try {
+        parsed = new URL(raw);
+      } catch {
+        throw new Error(
+          `${label}: вставьте полную ссылку, начинающуюся с https://`
+        );
+      }
+
+      if (
+        !['https:', 'http:'].includes(parsed.protocol) ||
+        !parsed.hostname.includes('.')
+      ) {
+        throw new Error(
+          `${label}: ссылка выглядит неверно. Нужен полный адрес сайта.`
+        );
+      }
+
+      return parsed.href;
     }
 
-    function normalizeEmail(value) {
+    function makeWhatsAppLink(value) {
       const raw = value.trim();
       if (!raw) return '';
 
-      return raw.toLowerCase().startsWith('mailto:')
-        ? raw
-        : `mailto:${raw}`;
+      if (!/^[+0-9\s().-]+$/.test(raw)) {
+        throw new Error(
+          'WhatsApp: введите номер с кодом страны, без ссылки и текста.'
+        );
+      }
+
+      const digits = raw.replace(/\D/g, '');
+
+      if (digits.length < 8 || digits.length > 15) {
+        throw new Error(
+          'WhatsApp: проверьте номер и код страны. Должно быть от 8 до 15 цифр.'
+        );
+      }
+
+      return `https://wa.me/${digits}`;
     }
 
-    async function handleSetupSubmit(event) {
+    function makeTelegramLink(value) {
+      const raw = value.trim();
+      if (!raw) return '';
+
+      let username = raw;
+
+      if (/^(https?:\/\/)?(www\.)?(t\.me|telegram\.me)\//i.test(raw)) {
+        const candidate = raw.startsWith('http')
+          ? raw
+          : `https://${raw}`;
+
+        let parsed;
+
+        try {
+          parsed = new URL(candidate);
+        } catch {
+          throw new Error(
+            'Telegram: проверьте ссылку. Пример: https://t.me/mybusiness'
+          );
+        }
+
+        if (
+          !['t.me', 'www.t.me', 'telegram.me', 'www.telegram.me']
+            .includes(parsed.hostname.toLowerCase())
+        ) {
+          throw new Error(
+            'Telegram: используйте имя пользователя или ссылку t.me.'
+          );
+        }
+
+        username = parsed.pathname.split('/').filter(Boolean)[0] || '';
+
+        if (username.startsWith('+')) {
+          throw new Error(
+            'Telegram: введите публичное имя пользователя, например @mybusiness.'
+          );
+        }
+      } else {
+        username = username.replace(/^@/, '');
+      }
+
+      if (!/^[A-Za-z0-9_]{5,32}$/.test(username)) {
+        throw new Error(
+          'Telegram: введите имя пользователя длиной от 5 символов, например @mybusiness. Телефон не подходит.'
+        );
+      }
+
+      return `https://t.me/${username}`;
+    }
+
+    function addReviewRow(container, label, value, url) {
+      const row = document.createElement('div');
+      row.className = 'review-row';
+
+      const labelNode = document.createElement('span');
+      labelNode.className = 'review-label';
+      labelNode.textContent = label;
+      row.appendChild(labelNode);
+
+      const valueNode = document.createElement('div');
+      valueNode.className = 'review-value';
+      valueNode.textContent =
+        value || 'Не указано — эта кнопка не будет отображаться.';
+      row.appendChild(valueNode);
+
+      if (url) {
+        const link = document.createElement('a');
+        link.className = 'review-link';
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'Открыть ссылку и проверить';
+        row.appendChild(link);
+      }
+
+      container.appendChild(row);
+    }
+
+    function prepareSetupReview(event) {
       event.preventDefault();
 
-      const submitBtn = document.getElementById('setup-submit-btn');
+      try {
+        const yandex = normalizeMapUrl(
+          readField('setup-yandex'),
+          'Яндекс Карты'
+        );
+
+        const gis2 = normalizeMapUrl(
+          readField('setup-2gis'),
+          '2ГИС'
+        );
+
+        const google = normalizeMapUrl(
+          readField('setup-google'),
+          'Google Maps'
+        );
+
+        if (!yandex && !gis2 && !google) {
+          throw new Error(
+            'Добавьте хотя бы одну ссылку на карточку заведения в Яндекс Картах, 2ГИС или Google Maps.'
+          );
+        }
+
+        const whatsapp = makeWhatsAppLink(
+          readField('setup-whatsapp')
+        );
+
+        const telegram = makeTelegramLink(
+          readField('setup-telegram')
+        );
+
+        const phoneRaw = readField('setup-phone');
+        const emailRaw = readField('setup-email');
+
+        if (phoneRaw && !/^[+0-9\s().-]{5,35}$/.test(phoneRaw)) {
+          throw new Error(
+            'Проверьте телефон для звонка: используйте цифры, +, пробелы, скобки или дефисы.'
+          );
+        }
+
+        if (emailRaw && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRaw)) {
+          throw new Error('Проверьте адрес электронной почты.');
+        }
+
+        pendingClientConfig = {
+          id: currentClientId,
+          name: readField('setup-name'),
+          yandex,
+          gis2,
+          google,
+          whatsapp,
+          telegram,
+          phone: phoneRaw ? `tel:${phoneRaw}` : '',
+          email: emailRaw ? `mailto:${emailRaw}` : ''
+        };
+
+        const summary = document.getElementById('review-summary');
+        summary.replaceChildren();
+
+        addReviewRow(
+          summary,
+          'Название заведения',
+          pendingClientConfig.name,
+          ''
+        );
+
+        addReviewRow(
+          summary,
+          'Яндекс Карты',
+          yandex ? new URL(yandex).hostname : '',
+          yandex
+        );
+
+        addReviewRow(
+          summary,
+          '2ГИС',
+          gis2 ? new URL(gis2).hostname : '',
+          gis2
+        );
+
+        addReviewRow(
+          summary,
+          'Google Maps',
+          google ? new URL(google).hostname : '',
+          google
+        );
+
+        addReviewRow(summary, 'WhatsApp', whatsapp, whatsapp);
+        addReviewRow(summary, 'Telegram', telegram, telegram);
+
+        addReviewRow(
+          summary,
+          'Телефон для звонка',
+          phoneRaw,
+          phoneRaw ? pendingClientConfig.phone : ''
+        );
+
+        addReviewRow(
+          summary,
+          'Электронная почта',
+          emailRaw,
+          emailRaw ? pendingClientConfig.email : ''
+        );
+
+        goToStep('step-review');
+      } catch (error) {
+        alert(error.message || 'Проверьте введённые данные.');
+      }
+    }
+
+    async function activateClient() {
+      if (!pendingClientConfig) {
+        alert('Сначала заполните форму и проверьте данные.');
+        goToStep('step-setup');
+        return;
+      }
+
+      const submitBtn = document.getElementById('confirm-activate-btn');
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Сохранение...';
+      submitBtn.textContent = 'Сохраняем настройки...';
 
-      const phoneValue =
-        document.getElementById('setup-phone').value.trim();
-
-      const emailValue =
-        document.getElementById('setup-email').value.trim();
-
-      const clientConfig = {
-        id: currentClientId,
-        name: document.getElementById('setup-name').value.trim(),
-        yandex: document.getElementById('setup-yandex').value.trim(),
-        gis2: document.getElementById('setup-2gis').value.trim(),
-        google: document.getElementById('setup-google').value.trim(),
-        whatsapp: document.getElementById('setup-whatsapp').value.trim(),
-        telegram: document.getElementById('setup-telegram').value.trim(),
-        phone: normalizePhone(phoneValue),
-        email: normalizeEmail(emailValue)
-      };
+      const clientConfig = pendingClientConfig;
 
       const payload = {
         p_id: clientConfig.id,
@@ -689,25 +954,31 @@
         );
 
         if (result && result.ok === true) {
-          // Показываем готовую страницу сразу после сохранения.
-          // Повторно прикладывать NFC-метку не требуется.
           renderClientCard(clientConfig);
           goToStep('step-1');
+          pendingClientConfig = null;
           return;
         }
 
         if (result && result.code === 'ALREADY_ACTIVATED') {
-          alert(
-            'Эта метка уже активирована. Сейчас загрузим сохранённые настройки.'
+          const savedClient = await callSupabaseFunction(
+            'nfc_get_client',
+            { p_id: currentClientId }
           );
 
-          await loadClient();
-          return;
+          if (savedClient) {
+            renderClientCard(savedClient);
+            goToStep('step-1');
+            pendingClientConfig = null;
+
+            alert(
+              'Эта метка уже была активирована. Показаны сохранённые настройки.'
+            );
+            return;
+          }
         }
 
-        alert(
-          getFriendlyActivationError(result && result.code)
-        );
+        alert(getFriendlyActivationError(result && result.code));
       } catch (error) {
         console.error(error);
 
@@ -717,7 +988,7 @@
         );
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Сохранить и активировать';
+        submitBtn.textContent = 'Всё верно — подтвердить и активировать';
       }
     }
   </script>
