@@ -178,7 +178,6 @@
       color: var(--text);
     }
 
-    /* Стили для формы первичной настройки */
     .setup-form {
       text-align: left;
     }
@@ -251,7 +250,7 @@
     <h1 class="client-title" id="client-name">Загрузка...</h1>
 
     <!-- Шаг 1: Оценка -->
-    <section id="step-1" class="step active">
+    <section id="step-1" class="step">
       <p class="subtitle">Поделитесь своими впечатлениями — это поможет нам стать лучше.</p>
       
       <div class="feedback-grid">
@@ -311,9 +310,9 @@
       <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
     </section>
 
-    <!-- Шаг 4: Форма первичной настройки покупателем -->
+    <!-- Шаг 4: Первичная настройка стойки покупателем -->
     <section id="step-setup" class="step">
-      <p class="subtitle" style="margin-bottom: 20px;">Заполните данные вашей организации для активации NFC-стойки:</p>
+      <p class="subtitle" style="margin-bottom: 20px;">Введите данные вашей организации для активации стойки:</p>
       
       <form id="setup-form" class="setup-form" onsubmit="handleSetupSubmit(event)">
         <div class="form-group">
@@ -337,12 +336,12 @@
         </div>
 
         <div class="form-group">
-          <label>WhatsApp для обратной связи</label>
+          <label>Ссылка на WhatsApp</label>
           <input type="url" id="setup-whatsapp" class="form-input" placeholder="https://wa.me/79991234567">
         </div>
 
         <div class="form-group">
-          <label>Telegram для обратной связи</label>
+          <label>Ссылка на Telegram</label>
           <input type="url" id="setup-telegram" class="form-input" placeholder="https://t.me/username">
         </div>
 
@@ -352,9 +351,8 @@
   </main>
 
   <script>
-    // Вставьте сюда ключи вашего проекта Supabase:
-    const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
-    const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+    const SUPABASE_URL = 'https://upwyxihwrvupgirahvvp.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_h-zAOvGJDvNFbQDeMURvXg_GJTB_Sqw';
 
     let companyName = 'Спасибо за визит!';
     let currentClientId = null;
@@ -411,36 +409,40 @@
       currentClientId = new URLSearchParams(window.location.search).get('id')?.trim() || null;
 
       if (!currentClientId) {
-        document.getElementById('client-name').textContent = 'Ошибка: Метка не распознана';
+        document.getElementById('client-name').textContent = 'Метка не распознана';
         return;
       }
 
       try {
-        // Проверяем наличие записи с данным ID в базе данных Supabase
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/clients?id=eq.${encodeURIComponent(currentClientId)}`, {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/stands?id=eq.${encodeURIComponent(currentClientId)}`, {
           headers: {
             'apikey': SUPABASE_ANON_KEY,
             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
           }
         });
 
-        if (!response.ok) throw new Error('Ошибка связи с базой данных');
+        if (!response.ok) throw new Error('Ошибка сервера');
 
         const data = await response.json();
 
-        // Если стойка еще не настроена покупателем
         if (!data || data.length === 0) {
+          document.getElementById('client-name').textContent = 'Недействительная метка';
+          return;
+        }
+
+        const stand = data[0];
+
+        if (!stand.is_active) {
           goToStep('step-setup');
           return;
         }
 
-        // Если стойка уже настроена — выводим готовый экран
-        renderClientCard(data[0]);
+        renderClientCard(stand);
         goToStep('step-1');
 
       } catch (error) {
         console.error(error);
-        document.getElementById('client-name').textContent = 'Ошибка соединения';
+        document.getElementById('client-name').textContent = 'Ошибка загрузки';
       }
     });
 
@@ -449,41 +451,47 @@
 
       const submitBtn = document.getElementById('setup-submit-btn');
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Сохранение...';
+      submitBtn.textContent = 'Активация...';
 
-      const newConfig = {
-        id: currentClientId,
+      const updateData = {
         name: document.getElementById('setup-name').value.trim(),
         yandex: document.getElementById('setup-yandex').value.trim(),
         gis2: document.getElementById('setup-2gis').value.trim(),
         google: document.getElementById('setup-google').value.trim(),
         whatsapp: document.getElementById('setup-whatsapp').value.trim(),
-        telegram: document.getElementById('setup-telegram').value.trim()
+        telegram: document.getElementById('setup-telegram').value.trim(),
+        is_active: true,
+        activated_at: new Date().toISOString()
       };
 
       try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/clients`, {
-          method: 'POST',
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/stands?id=eq.${encodeURIComponent(currentClientId)}`, {
+          method: 'PATCH',
           headers: {
             'apikey': SUPABASE_ANON_KEY,
             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
             'Content-Type': 'application/json',
             'Prefer': 'return=representation'
           },
-          body: JSON.stringify(newConfig)
+          body: JSON.stringify(updateData)
         });
 
         if (response.ok) {
-          renderClientCard(newConfig);
-          goToStep('step-1');
+          const updatedRows = await response.json();
+          if (updatedRows && updatedRows.length > 0) {
+            renderClientCard(updateData);
+            goToStep('step-1');
+          } else {
+            alert('Эта метка уже была активирована ранее.');
+          }
         } else {
-          alert('Не удалось сохранить данные. Попробуйте еще раз.');
+          alert('Ошибка при сохранении. Попробуйте еще раз.');
           submitBtn.disabled = false;
           submitBtn.textContent = 'Сохранить и активировать';
         }
       } catch (err) {
         console.error(err);
-        alert('Ошибка сети при отправке данных.');
+        alert('Ошибка сети.');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Сохранить и активировать';
       }
