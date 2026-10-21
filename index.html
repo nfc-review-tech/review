@@ -178,7 +178,7 @@
       color: var(--text);
     }
 
-    /* Стили для формы настройки */
+    /* Стили для формы первичной настройки */
     .setup-form {
       text-align: left;
     }
@@ -250,7 +250,7 @@
 
     <h1 class="client-title" id="client-name">Загрузка...</h1>
 
-    <!-- Шаг 1: Главный выбор -->
+    <!-- Шаг 1: Оценка -->
     <section id="step-1" class="step active">
       <p class="subtitle">Поделитесь своими впечатлениями — это поможет нам стать лучше.</p>
       
@@ -266,7 +266,7 @@
       </div>
     </section>
 
-    <!-- Шаг 2: Положительный отзыв -->
+    <!-- Шаг 2: Положительный отзыв (Карты) -->
     <section id="step-positive" class="step">
       <p class="subtitle">Рады, что вам всё понравилось! Выберите удобную платформу для отзыва:</p>
       
@@ -288,7 +288,7 @@
       <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
     </section>
 
-    <!-- Шаг 3: Отрицательный отзыв -->
+    <!-- Шаг 3: Отрицательный отзыв (Служба заботы) -->
     <section id="step-negative" class="step">
       <p class="subtitle">Нам очень жаль, что так вышло. Свяжитесь с нами напрямую, и мы всё исправим:</p>
       
@@ -311,14 +311,14 @@
       <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
     </section>
 
-    <!-- Шаг 4: Мастер Активации / Настройки (для нового покупателя) -->
+    <!-- Шаг 4: Форма первичной настройки покупателем -->
     <section id="step-setup" class="step">
-      <p class="subtitle" style="margin-bottom: 20px;">Введите данные вашего заведения для активации NFC-стойки:</p>
+      <p class="subtitle" style="margin-bottom: 20px;">Заполните данные вашей организации для активации NFC-стойки:</p>
       
       <form id="setup-form" class="setup-form" onsubmit="handleSetupSubmit(event)">
         <div class="form-group">
           <label>Название заведения *</label>
-          <input type="text" id="setup-name" class="form-input" placeholder="например, Салон красоты «Аура»" required>
+          <input type="text" id="setup-name" class="form-input" placeholder="Салон красоты «Аура»" required>
         </div>
 
         <div class="form-group">
@@ -337,21 +337,25 @@
         </div>
 
         <div class="form-group">
-          <label>WhatsApp для жалоб</label>
-          <input type="tel" id="setup-whatsapp" class="form-input" placeholder="https://wa.me/79991234567">
+          <label>WhatsApp для обратной связи</label>
+          <input type="url" id="setup-whatsapp" class="form-input" placeholder="https://wa.me/79991234567">
         </div>
 
         <div class="form-group">
-          <label>Telegram для жалоб</label>
-          <input type="text" id="setup-telegram" class="form-input" placeholder="https://t.me/username">
+          <label>Telegram для обратной связи</label>
+          <input type="url" id="setup-telegram" class="form-input" placeholder="https://t.me/username">
         </div>
 
-        <button type="submit" class="btn-primary">Активировать метку</button>
+        <button type="submit" id="setup-submit-btn" class="btn-primary">Сохранить и активировать</button>
       </form>
     </section>
   </main>
 
   <script>
+    // Вставьте сюда ключи вашего проекта Supabase:
+    const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+
     let companyName = 'Спасибо за визит!';
     let currentClientId = null;
 
@@ -377,62 +381,75 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function setPlatform(btnId, url) {
+      const btn = document.getElementById(btnId);
+      if (btn) {
+        if (url && url.trim() !== '' && url !== '#' && url !== '-' && url !== 'null') {
+          btn.href = url;
+          btn.style.display = 'flex';
+        } else {
+          btn.style.display = 'none';
+        }
+      }
+    }
+
+    function renderClientCard(client) {
+      companyName = client.name || 'Спасибо за визит!';
+      document.getElementById('client-name').textContent = companyName;
+
+      setPlatform('btn-yandex', client.yandex);
+      setPlatform('btn-2gis', client.gis2);
+      setPlatform('btn-google', client.google);
+      
+      setPlatform('btn-phone', client.phone);
+      setPlatform('btn-whatsapp', client.whatsapp);
+      setPlatform('btn-telegram', client.telegram);
+      setPlatform('btn-email', client.email);
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
       currentClientId = new URLSearchParams(window.location.search).get('id')?.trim() || null;
 
       if (!currentClientId) {
-        document.getElementById('client-name').textContent = 'Метка не распознана';
+        document.getElementById('client-name').textContent = 'Ошибка: Метка не распознана';
         return;
       }
 
-      fetch('./clients.json?v=' + Date.now(), { cache: 'no-store' })
-        .then(response => {
-          if (!response.ok) throw new Error('clients.json не найден');
-          return response.json();
-        })
-        .then(data => {
-          let client = data[currentClientId];
-
-          // Если ID нет в базе -> Переключаем на экран первичной настройки
-          if (!client) {
-            goToStep('step-setup');
-            return;
+      try {
+        // Проверяем наличие записи с данным ID в базе данных Supabase
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/clients?id=eq.${encodeURIComponent(currentClientId)}`, {
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
           }
-
-          // Если клиент есть -> инициализируем обычную страницу отзыва
-          companyName = client.name || 'Спасибо за визит!';
-          document.getElementById('client-name').textContent = companyName;
-
-          const setPlatform = (btnId, url) => {
-            const btn = document.getElementById(btnId);
-            if (btn) {
-              if (url && url.trim() !== '' && url !== '#' && url !== '-' && url !== 'null') {
-                btn.href = url;
-                btn.style.display = 'flex';
-              } else {
-                btn.style.display = 'none';
-              }
-            }
-          };
-
-          setPlatform('btn-yandex', client.yandex);
-          setPlatform('btn-2gis', client.gis2);
-          setPlatform('btn-google', client.google);
-          
-          setPlatform('btn-phone', client.phone);
-          setPlatform('btn-whatsapp', client.whatsapp);
-          setPlatform('btn-telegram', client.telegram);
-          setPlatform('btn-email', client.email);
-        })
-        .catch(error => {
-          console.error(error);
-          document.getElementById('client-name').textContent = 'Ошибка загрузки';
         });
+
+        if (!response.ok) throw new Error('Ошибка связи с базой данных');
+
+        const data = await response.json();
+
+        // Если стойка еще не настроена покупателем
+        if (!data || data.length === 0) {
+          goToStep('step-setup');
+          return;
+        }
+
+        // Если стойка уже настроена — выводим готовый экран
+        renderClientCard(data[0]);
+        goToStep('step-1');
+
+      } catch (error) {
+        console.error(error);
+        document.getElementById('client-name').textContent = 'Ошибка соединения';
+      }
     });
 
-    // Обработка сохранения данных покупателем
-    function handleSetupSubmit(event) {
+    async function handleSetupSubmit(event) {
       event.preventDefault();
+
+      const submitBtn = document.getElementById('setup-submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Сохранение...';
 
       const newConfig = {
         id: currentClientId,
@@ -444,21 +461,32 @@
         telegram: document.getElementById('setup-telegram').value.trim()
       };
 
-      // ЗДЕСЬ ОТПРАВЛЯЮТСЯ ДАННЫЕ (выберите один из удобных вариантов ниже):
-      
-      // Вариант А: Сохранение через вебхук (n8n / Webhook / Supabase API)
-      /*
-      fetch('https://your-api-endpoint.com/save-client', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newConfig)
-      })
-      .then(() => location.reload());
-      */
+      try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/clients`, {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify(newConfig)
+        });
 
-      // Временное подтверждение (демо):
-      alert('Данные сохранены! Метка успешно активирована.');
-      location.reload();
+        if (response.ok) {
+          renderClientCard(newConfig);
+          goToStep('step-1');
+        } else {
+          alert('Не удалось сохранить данные. Попробуйте еще раз.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Сохранить и активировать';
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Ошибка сети при отправке данных.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Сохранить и активировать';
+      }
     }
   </script>
 </body>
