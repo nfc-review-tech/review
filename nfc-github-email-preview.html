@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#f2f2f7" />
+  <title>NFC Review — предварительная версия GitHub JSON</title>
+
+  <style>
+    :root {
+      --bg: #f2f2f7;
+      --card: #ffffff;
+      --text: #1d1d1f;
+      --secondary: #86868b;
+      --green-bg: #e8f5e9;
+      --green-text: #2e7d32;
+      --orange-bg: #fff0e5;
+      --orange-text: #d84315;
+      --blue-light: #eaf2ff;
+      --blue: #007aff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+        "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 24px 16px;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 390px;
+      padding: 40px 24px 32px;
+      text-align: center;
+      background: var(--card);
+      border-radius: 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05),
+        0 4px 12px rgba(0, 0, 0, 0.02);
+      animation: appear 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .icon-badge {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 24px;
+      background: var(--blue-light);
+      border-radius: 20px;
+      font-size: 28px;
+      box-shadow: inset 0 0 0 1px rgba(0, 122, 255, 0.1);
+    }
+
+    .client-title {
+      max-width: 300px;
+      margin: 0 auto 12px;
+      font-size: clamp(24px, 6vw, 28px);
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      margin-bottom: 28px;
+      color: var(--secondary);
+      font-size: 16px;
+      line-height: 1.4;
+      letter-spacing: -0.1px;
+    }
+
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+      animation: step-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .feedback-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .btn-feedback {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 12px;
+      border: none;
+      border-radius: 24px;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.3;
+      cursor: pointer;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .btn-feedback:active {
+      transform: scale(0.95);
+    }
+
+    .btn-feedback:hover {
+      filter: brightness(0.96);
+    }
+
+    .btn-feedback .emoji {
+      font-size: 38px;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.15));
+    }
+
+    .btn-positive {
+      background: var(--green-bg);
+      color: var(--green-text);
+    }
+
+    .btn-negative {
+      background: var(--orange-bg);
+      color: var(--orange-text);
+    }
+
+    .platform-btn {
+      width: 100%;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 12px 20px;
+      margin-bottom: 12px;
+      background: #ffffff;
+      border: 1.5px solid #f2f2f7;
+      border-radius: 20px;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .platform-btn:hover {
+      border-color: #e5e5ea;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    .platform-btn:active {
+      transform: scale(0.98) translateY(0);
+    }
+
+    .platform-icon {
+      width: 40px;
+      height: 40px;
+      position: absolute;
+      left: 16px;
+      object-fit: contain;
+    }
+
+    .btn-back {
+      margin-top: 16px;
+      padding: 12px 24px;
+      color: var(--secondary);
+      background: #f2f2f7;
+      border-radius: 100px;
+      border: 0;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .btn-back:hover {
+      background: #e5e5ea;
+      color: var(--text);
+    }
+
+    .setup-form {
+      text-align: left;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid #e5e5ea;
+      border-radius: 14px;
+      font-size: 15px;
+      background: #fafafa;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .form-input:focus {
+      border-color: var(--blue);
+      background: #ffffff;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      margin-top: 12px;
+      background: var(--blue);
+      color: #ffffff;
+      border: none;
+      border-radius: 16px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .form-help {
+      margin-top: 7px;
+      color: var(--secondary);
+      font-size: 13px;
+      line-height: 1.45;
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 400;
+    }
+
+    textarea.form-input {
+      display: block;
+      min-height: 72px;
+      resize: vertical;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .review-warning {
+      margin: 0 0 18px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #fff4e5;
+      color: #7a4b00;
+      font-size: 14px;
+      line-height: 1.45;
+      text-align: left;
+    }
+
+    .review-list {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .review-row {
+      padding: 13px 14px;
+      border: 1px solid #e5e5ea;
+      border-radius: 14px;
+      background: #fafafa;
+      overflow-wrap: anywhere;
+    }
+
+    .review-label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .review-value {
+      font-size: 15px;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .review-link {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 14px 16px;
+      margin-top: 10px;
+      border: 0;
+      border-radius: 16px;
+      background: #f2f2f7;
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes step-in {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Дополнения к существующему дизайну */
+    .preview-banner {font-size:12px;font-weight:700;line-height:1.4;color:#8a5900;background:#fff5ce;padding:12px 14px;border-radius:14px;margin:-14px 0 20px;}
+    .doc-box {margin:20px 0 14px;padding:16px 14px;background:#f2f2f7;border-radius:17px;text-align:left;font-size:13px;line-height:1.55;}
+    .doc-box details {margin:10px 0 0;border-bottom:1px solid #dddde4;padding:0 0 10px;}
+    .doc-box summary {cursor:pointer;color:#007aff;font-size:14px;font-weight:600;}
+    .doc-box p {margin:8px 0;color:#555;}
+    .doc-box ul {padding-left:18px;margin:8px 0;}
+    .doc-box li {margin:6px 0;}
+    .doc-box .checkline {display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;font-size:13px;font-weight:500;line-height:1.45;color:#1d1d1f;}
+    .doc-box .checkline input {flex:0 0 auto;width:19px;height:19px;margin:0;accent-color:#007aff;}
+    .doc-box .checkline span {flex:1;}
+    .preview-note {font-size:12px;color:#8a5900;line-height:1.4;margin-top:10px;}
+    .form-error {color:#b42318;font-size:13px;line-height:1.4;margin-top:12px;white-space:pre-wrap;text-align:left;}
+    .form-error:empty {display:none;}
+    #step-pending .pending-icon {font-size:48px;margin-bottom:16px;}
+    #step-pending .pending-id {background:#f2f2f7;border-radius:12px;padding:12px;margin-top:14px;font-size:12px;overflow-wrap:anywhere;}
+    #step-pending .pending-note {font-size:14px;color:#1d1d1f;line-height:1.5;margin:12px 0;}
+    .subtle-hint {font-size:13px;color:#86868b;line-height:1.5;margin:10px 0;}
+    .review-alt {display:block;margin:16px 0 0;border:0;background:none;color:#007aff;font-size:14px;text-decoration:underline;cursor:pointer;font-weight:600;}
+    #step-setup .form-help a {overflow-wrap:anywhere;}
+    .dangerline {font-size:12px;color:#a16207;line-height:1.5;margin:14px 0 0;}
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <div class="preview-banner">ПРЕДПРОСМОТР — НЕ ОТПРАВЛЯТЬ ПОКУПАТЕЛЯМ. Юридические документы ещё требуют данных владельца.</div>
+    <div class="icon-badge" id="icon-badge" aria-hidden="true">💙</div>
+
+    <h1 class="client-title" id="client-name">Загрузка...</h1>
+
+    <!-- Шаг 1: Оценка -->
+    <section id="step-1" class="step">
+      <p class="subtitle">Поделитесь своими впечатлениями — это поможет нам стать лучше.</p>
+
+      <div class="feedback-grid">
+        <button class="btn-feedback btn-positive" onclick="goToStep('step-positive')">
+          <span class="emoji">😊</span>
+          <span>Да, всё<br>отлично</span>
+        </button>
+
+        <button class="btn-feedback btn-negative" onclick="goToStep('step-negative')">
+          <span class="emoji">🙁</span>
+          <span>Есть<br>замечания</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Шаг 2: Положительный отзыв -->
+    <section id="step-positive" class="step">
+      <p class="subtitle">Рады, что вам всё понравилось! Выберите удобную платформу для отзыва:</p>
+
+      <a id="btn-yandex" href="#" target="_blank" rel="noopener" class="platform-btn">
+        <img src="location-3d-icon-illustration-free-png-removebg-preview.png" alt="" class="platform-icon">
+        Яндекс Карты
+      </a>
+
+      <a id="btn-2gis" href="#" target="_blank" rel="noopener" class="platform-btn">
+        <img src="IMG_2624-removebg-preview-removebg-preview.png" alt="" class="platform-icon">
+        2ГИС
+      </a>
+
+      <a id="btn-google" href="#" target="_blank" rel="noopener" class="platform-btn">
+        <img src="google-map-logo-3d-google-map-logo-free-png-removebg-preview.png" alt="" class="platform-icon">
+        Google Maps
+      </a>
+
+    
+    </section>
+
+    <!-- Шаг 3: Служба заботы -->
+    <section id="step-negative" class="step">
+      <p class="subtitle">Нам очень жаль, что так вышло. Свяжитесь с нами напрямую, и мы всё исправим:</p>
+
+      <a id="btn-phone" href="#" class="platform-btn" style="background: #1d1d1f; color: white; border: none;">
+        Позвонить
+      </a>
+
+      <a id="btn-whatsapp" href="#" target="_blank" rel="noopener" class="platform-btn" style="background: #25D366; color: white; border: none;">
+        Написать в WhatsApp
+      </a>
+
+      <a id="btn-telegram" href="#" target="_blank" rel="noopener" class="platform-btn" style="background: #0088cc; color: white; border: none;">
+        Написать в Telegram
+      </a>
+
+      <a id="btn-email" href="#" class="platform-btn" style="background: #007aff; color: white; border: none;">
+        Написать на почту
+      </a>
+
+      <button class="review-alt" type="button" onclick="goToStep('step-positive')">Перейти к площадкам для отзывов</button>
+      <button class="btn-back" onclick="goToStep('step-1')">Назад</button>
+    </section>
+
+    <!-- Шаг 4: Настройка NFC стикер -->
+    <section id="step-setup" class="step">
+      <p class="subtitle" style="margin-bottom: 20px;">
+        Заполните данные вашей компании. Нажмите «Активировать стикер» — заявка уйдёт продавцу, а стикер подключат после проверки.
+      </p>
+
+      <form id="setup-form" class="setup-form" onsubmit="submitActivationRequest(event)">
+        <div class="form-group">
+          <label for="setup-name">Название заведения *</label>
+          <input type="text" id="setup-name" class="form-input"
+                 placeholder="Салон красоты «Аура»" maxlength="160" required>
+        </div>
+
+        <div class="form-group">
+          <label for="setup-yandex">Ссылка на Яндекс Карты</label>
+          <textarea id="setup-yandex" class="form-input" rows="2"
+                    placeholder="Вставьте ссылку на карточку заведения"></textarea>
+          <p class="form-help">
+  Откройте
+  <a href="https://business.yandex.ru/" target="_blank" rel="noopener">Яндекс Бизнес</a>,
+  выберите свою организацию и найдите раздел «О компании» → «Промоматериалы».
+  Также можно открыть
+  <a href="https://yandex.ru/maps/" target="_blank" rel="noopener">Яндекс Карты</a>
+  обязательно в браузере (из приложения не получится), найти карточку своей организации,
+  перейти в «Отзывы» → «Написать отзыв» и скопировать адресную ссылку.
+</p>
+        </div>
+
+        <div class="form-group">
+          <label for="setup-2gis">Ссылка на 2ГИС</label>
+          <textarea id="setup-2gis" class="form-input" rows="2"
+                    placeholder="Вставьте ссылку на карточку заведения"></textarea>
+          <p class="form-help">
+  Откройте <a href="https://account.2gis.com/" target="_blank" rel="noopener">личный кабинет 2ГИС</a>,
+  выберите «Моя компания» → «Отзывы» → «Промоматериалы».
+  Также можно открыть <a href="https://2gis.ru/" target="_blank" rel="noopener">2ГИС</a>
+  в браузере, найти карточку своей организации,
+  перейти в «Отзывы» «Написать отзыв» и скопировать адресную ссылку.
+</p>
+        </div>
+
+        <div class="form-group">
+          <label for="setup-google">Ссылка на Google Maps</label>
+          <textarea id="setup-google" class="form-input" rows="2"
+                    placeholder="https://maps.app.goo.gl/... или длинная ссылка Google Maps"></textarea>
+          <p class="form-help">
+  Откройте <a href="https://business.google.com/" target="_blank" rel="noopener">Google Business Profile</a>,
+  выберите свою организацию → «Читать отзывы» →
+  «Получить больше отзывов» → «Копировать ссылку».
+  Вставьте полученную ссылку сюда.
+</p>
+        </div>
+
+        <div class="form-group">
+          <label for="setup-whatsapp">Телефон WhatsApp</label>
+          <input type="tel" id="setup-whatsapp" class="form-input"
+                 placeholder="+7 981 700-33-43" autocomplete="tel">
+          <p class="form-help">Укажите номер с кодом страны. Ссылку WhatsApp мы создадим сами. Пример: +7 981 700-33-43.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="setup-telegram">Имя пользователя Telegram</label>
+          <input type="text" id="setup-telegram" class="form-input"
+                 placeholder="@mybusiness или mybusiness" autocomplete="off">
+          <p class="form-help">Введите имя пользователя из профиля Telegram. Можно с символом @ или без него. Номер телефона сюда вводить не нужно.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="setup-phone">Телефон для звонка (необязательно)</label>
+          <input type="tel" id="setup-phone" class="form-input"
+                 placeholder="+7 999 123-45-67" autocomplete="tel">
+        </div>
+
+        <div class="form-group">
+          <label for="setup-email">Электронная почта (необязательно)</label>
+          <input type="email" id="setup-email" class="form-input"
+                 placeholder="hello@example.com" autocomplete="email">
+        </div>
+
+
+        <input id="website-check" name="website-check" aria-hidden="true" tabindex="-1" autocomplete="off"
+               style="position:absolute;left:-10000px;width:1px;height:1px" type="text">
+        <div class="doc-box">
+          <strong>Подтверждение перед отправкой</strong>
+          <p class="preview-note">Юридические тексты пока проектные: до реального запуска нужно указать полное имя/наименование владельца сервиса и проверить требования к персональным данным.</p>
+          <details>
+            <summary>Условия использования NFC-стикера</summary>
+            <p><strong>1. Назначение.</strong> Страница NFC-стикера позволяет посетителям компании переходить к площадкам отзывов и указанным владельцем компании контактам.</p>
+            <p><strong>2. Заявка.</strong> Заполняющий форму подтверждает, что действует от имени компании либо имеет право предоставлять сведения для её страницы. Стикер не активируется автоматически: сначала заявка поступает продавцу, затем проходит проверку.</p>
+            <p><strong>3. Сведения.</strong> Пользователь отвечает за точность названия, ссылок и публичных контактных данных, подтверждает право на их размещение и при необходимости наличие разрешения лиц, чьи контакты он указывает.</p>
+            <p><strong>4. Изменения.</strong> Для исправления, обновления или удаления данных страницы необходимо обратиться к продавцу по электронной почте <strong>k.shekiantc@gmail.com</strong> или в переписке по заказу.</p>
+            <p><strong>5. Сроки.</strong> Отправка заявки не гарантирует мгновенной публикации. Обновление страницы происходит после ручной обработки и публикации сайта.</p>
+          </details>
+          <label class="checkline"><input type="checkbox" id="accept-terms" required><span>Я принимаю условия использования и подтверждаю право размещать данные компании.</span></label>
+          <details>
+            <summary>Отдельное согласие на обработку персональных данных</summary>
+            <p><strong>Оператор:</strong> [ФИО / наименование ИП или организации, адрес — заполнить до запуска]. Контакт по вопросам данных: <strong>k.shekiantc@gmail.com</strong>.</p>
+            <p><strong>Цель:</strong> получение и рассмотрение заявки на активацию NFC-стикера, связь по заявке, настройка страницы компании и обработка запросов на исправление или удаление данных.</p>
+            <p><strong>Данные:</strong> название организации, указанные ссылки, телефоны, адреса электронной почты и имена пользователей мессенджеров, если эти сведения относятся к физическому лицу.</p>
+            <p><strong>Действия:</strong> получение, запись, систематизация, хранение, использование, уточнение, передача сервису доставки формы FormSubmit и получение заявки оператором по электронной почте; удаление по достижении цели или при наличии законного основания.</p>
+            <p><strong>Публикация:</strong> после проверки общедоступные рабочие ссылки и контакты компании могут быть показаны посетителям страницы стикера в публичном JSON на GitHub Pages. Публикация персональных данных физических лиц требует отдельного правового основания и, где применимо, согласия на распространение.</p>
+            <p><strong>Срок:</strong> [указать конкретный срок хранения заявки до запуска]; согласие может быть отозвано сообщением на <strong>k.shekiantc@gmail.com</strong>, с учётом случаев законного продолжения обработки.</p>
+            <p><strong>Передача:</strong> при отправке формы сведения обрабатываются сервисом FormSubmit; страница сайта размещена на GitHub Pages. До запуска необходимо оценить требования к локализации и передаче данных за рубеж.</p>
+          </details>
+          <label class="checkline"><input type="checkbox" id="accept-data" required><span>Я отдельно даю согласие на описанную обработку указанных мной персональных данных.</span></label>
+        </div>
+        <p class="subtle-hint">После отправки появится подтверждение. Повторять заявку не нужно — активация выполняется вручную.</p>
+        <button type="submit" id="send-btn" class="btn-primary">Активировать стикер</button>
+        <p id="submit-error" class="form-error" role="alert" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- После успешной доставки заявки на email -->
+    <section id="step-pending" class="step">
+      <div class="pending-icon" aria-hidden="true">✅</div>
+      <h2 style="font-size:23px;line-height:1.25;margin-bottom:16px">Спасибо! Заявка на активацию принята.</h2>
+      <p class="subtitle" style="margin-bottom:14px">Ваша заявка отправлена продавцу. Мы проверим данные и вручную подключим ваш NFC-стикер.</p>
+      <p class="pending-note"><strong>Активация может занять некоторое время.</strong> Повторно заполнять и отправлять форму не требуется.</p>
+      <p class="subtle-hint">После активации достаточно ещё раз приложить телефон к стикеру. Перезаписывать его не нужно.</p>
+      <p class="subtle-hint">Если захотите уточнить статус, обратитесь к продавцу в переписке по заказу и сообщите ID:</p>
+      <div class="pending-id" id="pending-id"></div>
+    </section>
+    <p id="load-error" class="form-error" hidden>Не удалось проверить данные стикера. Форма не открыта, чтобы избежать повторной отправки. Попробуйте загрузить страницу ещё раз.</p>
+  </main>
+
+  <script>
+'use strict';
+const RECIPIENT_EMAIL = 'k.shekiantc@gmail.com';
+const CONSENT_VERSION = 'PREVIEW-2026-11-09';
+const jsonUrl = './clients.json';
+let companyName = 'Спасибо за визит!';
+let currentClientId = '';
+let sending = false;
+const $ = key => document.getElementById(key);
+
+function goToStep(stepId) {
+  document.querySelectorAll('.step').forEach(node => node.classList.remove('active'));
+  const section = $(stepId);
+  if (!section) return;
+  section.classList.add('active');
+  const titles = {
+    'step-1': companyName,
+    'step-positive': 'Спасибо за доверие!',
+    'step-negative': 'Служба заботы',
+    'step-setup': 'Настройка NFC-стикера',
+    'step-pending': 'Заявка отправлена'
+  };
+  const icons = {'step-1':'💙','step-positive':'⭐','step-negative':'💬','step-setup':'⚙️','step-pending':'✅'};
+  $('client-name').textContent = titles[stepId] || companyName;
+  $('icon-badge').textContent = icons[stepId] || '💙';
+}
+function readField(id) {return $(id).value.trim();}
+function safePublicUrl(value) {
+  if (typeof value !== 'string' || !value.trim()) return '';
+  try {
+    const url=new URL(value.trim());
+    return ['https:','http:','tel:','mailto:'].includes(url.protocol) ? url.href : '';
+  } catch {return '';}
+}
+function setPlatform(btnId, url) {
+  const btn = $(btnId);
+  if (!btn) return;
+  const href = safePublicUrl(url);
+  if (href) {btn.href=href;btn.style.display='flex';}
+  else {btn.removeAttribute('href');btn.style.display='none';}
+}
+function renderClientCard(client) {
+  companyName = typeof client.name === 'string' && client.name.trim() ? client.name : 'Спасибо за визит!';
+  const mapping = [['btn-yandex','yandex'],['btn-2gis','gis2'],['btn-google','google'],
+    ['btn-phone','phone'],['btn-whatsapp','whatsapp'],['btn-telegram','telegram'],['btn-email','email']];
+  mapping.forEach(([btnId,key])=>setPlatform(btnId,client[key]));
+  goToStep('step-1');
+}
+async function readClients() {
+  const response=await fetch(jsonUrl+'?v='+Date.now(),{cache:'no-store',signal:AbortSignal.timeout(12000)});
+  if (!response.ok) throw Error('clients.json: HTTP '+response.status);
+  const data=await response.json();
+  if (!data || typeof data!=='object' || Array.isArray(data)) throw Error('Неверный формат clients.json');
+  return data;
+}
+function pendingKey() {return 'nfc-activation-pending:'+currentClientId;}
+function showPending() {
+  $('pending-id').textContent=currentClientId;
+  goToStep('step-pending');
+}
+function normalizeMapUrl(value, name) {
+  const text=value.trim(); if (!text) return '';
+  let url;try {url=new URL(text);} catch {throw Error(name+': вставьте полную ссылку с https://');}
+  if (url.protocol!=='https:' || !url.hostname.includes('.')) throw Error(name+': нужна полная ссылка, начинающаяся с https://');
+  return url.href;
+}
+function phoneNumber(value,label) {
+  const s=value.trim();if(!s)return '';
+  if (!/^[+0-9\s().-]+$/.test(s))throw Error(label+': укажите номер телефона с кодом страны');
+  const digits=s.replace(/\D/g,'');
+  if(digits.length<8 || digits.length>15)throw Error(label+': требуется от 8 до 15 цифр');
+  return (s.startsWith('+')?'+':'')+digits;
+}
+function normalizeTelegram(value) {
+  const raw=value.trim();if(!raw)return '';
+  let username=raw;
+  if (/^https?:\/\//i.test(username)) {
+    let u;try{u=new URL(username);}catch{throw Error('Telegram: проверьте ссылку');}
+    if(!['t.me','www.t.me','telegram.me','www.telegram.me'].includes(u.hostname.toLowerCase()))
+      throw Error('Telegram: нужна ссылка t.me или @username');
+    username=u.pathname.split('/').filter(Boolean)[0] || '';
+  }
+  username=username.replace(/^@/,'');
+  if (!/^[A-Za-z0-9_]{5,32}$/.test(username)) throw Error('Telegram: укажите @username длиной 5–32 символа');
+  return 'https://t.me/'+username;
+}
+function collectClientData() {
+  const name=readField('setup-name');
+  if (!name) throw Error('Введите название заведения');
+  const yandex=normalizeMapUrl(readField('setup-yandex'),'Яндекс Карты');
+  const gis2=normalizeMapUrl(readField('setup-2gis'),'2ГИС');
+  const google=normalizeMapUrl(readField('setup-google'),'Google Maps');
+  if(!yandex&&!gis2&&!google)throw Error('Добавьте хотя бы одну ссылку на Яндекс Карты, 2ГИС или Google Maps');
+  const phone=phoneNumber(readField('setup-phone'),'Телефон');
+  const wa=phoneNumber(readField('setup-whatsapp'),'WhatsApp');
+  const telegram=normalizeTelegram(readField('setup-telegram'));
+  const email=readField('setup-email');
+  if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw Error('Проверьте адрес электронной почты');
+  return {
+    name, yandex, gis2, google, telegram,
+    whatsapp:wa ? 'https://wa.me/'+wa.replace(/\D/g,'') : '',
+    phone:phone ? 'tel:'+phone : '',
+    email:email ? 'mailto:'+email : ''
+  };
+}
+async function submitActivationRequest(event) {
+  event.preventDefault();
+  const btn=$('send-btn');const err=$('submit-error');
+  if(sending)return;
+  err.textContent='';
+  try {
+    if(!/^[A-Za-z0-9_-]{6,100}$/.test(currentClientId))throw Error('Неверный ID стикера');
+    if(!$('accept-terms').checked || !$('accept-data').checked)throw Error('Необходимо подтвердить оба пункта согласия');
+    if(readField('website-check'))throw Error('Не удалось отправить заявку');
+    const client=collectClientData();
+    // Проверяем свежий JSON перед отправкой: вдруг заявку уже обработали.
+    const clients=await readClients();
+    if(Object.prototype.hasOwnProperty.call(clients,currentClientId)){
+      renderClientCard(clients[currentClientId]);return;
+    }
+    const record=Object.create(null);record[currentClientId]=client;
+    const body={
+      _subject:'Заявка NFC на активацию: '+currentClientId,
+      _template:'table',_captcha:'false',_honey:'',
+      'ID NFC':currentClientId,
+      'Название компании':client.name,
+      'Готовая запись для clients.json':JSON.stringify(record,null,2),
+      'Согласие с условиями':'Отмечено; редакция '+CONSENT_VERSION,
+      'Согласие на обработку':'Отмечено; редакция '+CONSENT_VERSION,
+      'Время отправки (UTC)':new Date().toISOString(),
+      'Страница NFC':location.origin+location.pathname+'?id='+encodeURIComponent(currentClientId)
+    };
+    sending=true;btn.disabled=true;btn.textContent='Отправляем заявку...';
+    const response=await fetch('https://formsubmit.co/ajax/'+encodeURIComponent(RECIPIENT_EMAIL),{
+      method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify(body),signal:AbortSignal.timeout(20000)
+    });
+    let result={};try{result=await response.json();}catch{}
+    if(!response.ok || (result.success!==true && result.success!=='true')){
+      const message=typeof result.message==='string' && result.message ? result.message : 'Сервис не подтвердил получение заявки';
+      throw Error(message);
+    }
+    try {localStorage.setItem(pendingKey(),'1');}catch{}
+    showPending();
+  }catch(error){
+    console.error(error);
+    err.textContent = error.name==='TimeoutError' ?
+      'Сервис отправки не ответил. Прежде чем повторять заявку, уточните у продавца, не пришло ли письмо.':
+      (error.message||'Ошибка отправки. Проверьте интернет и повторите попытку.');
+  }finally{
+    sending=false;btn.disabled=false;btn.textContent='Активировать стикер';
+  }
+}
+async function init() {
+  ['btn-yandex','btn-2gis','btn-google','btn-phone','btn-whatsapp','btn-telegram','btn-email']
+    .forEach(x=>setPlatform(x,''));
+  currentClientId=(new URLSearchParams(location.search).get('id')||'').trim();
+  if(!/^[A-Za-z0-9_-]{6,100}$/.test(currentClientId)){
+    $('client-name').textContent='Метка не распознана';return;
+  }
+  try {
+    const clients=await readClients();
+    if(Object.prototype.hasOwnProperty.call(clients,currentClientId)){
+      renderClientCard(clients[currentClientId]);
+    }else if((()=>{try{return localStorage.getItem(pendingKey())==='1';}catch{return false;}})()){
+      showPending();
+    }else{
+      goToStep('step-setup');
+    }
+  }catch(error){
+    console.error(error);
+    $('client-name').textContent='Не удалось загрузить данные';
+    $('load-error').hidden=false;
+  }
+}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
