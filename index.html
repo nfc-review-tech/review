@@ -96,8 +96,8 @@ h1{margin:0 0 11px;font-size:clamp(23px,6vw,28px);line-height:1.2;letter-spacing
 <button class="submit" type="submit" id="send">Отправить заявку на активацию</button><p class="error" id="submit-error" role="alert" aria-live="polite"></p>
 </form></section>
 <section id="uncertain" class="step" aria-live="polite">
-<p class="sub">Сервис отправки не вернул подтверждение. Возможно, заявка уже доставлена продавцу.</p>
-<div class="status"><strong>Проверяем получение заявки</strong><p>Не отправляйте форму повторно прямо сейчас: письмо могло прийти, даже если на телефоне возникла ошибка. Сообщите продавцу ID стикера в переписке по заказу. Продавец проверит входящие и папку «Спам».</p></div>
+<p class="sub">Не удалось подтвердить отправку заявки. Письмо могло прийти продавцу, но это не гарантировано.</p>
+<div class="status"><strong>Отправка не подтверждена</strong><p>Не отправляйте форму повторно сразу. Сообщите продавцу ID стикера по заказу. Продавец проверит входящие и «Спам». Если письма нет, можно вернуться к форме и повторить отправку.</p></div>
 <p class="mini">Номер стикера:</p><code class="pending-id" id="uncertain-id" style="display:block;padding:12px;background:#f2f2f7;border-radius:11px;overflow-wrap:anywhere;font-size:12px"></code>
 <button class="back" id="uncertain-back" type="button">Вернуться к форме, если заявки нет</button>
 </section>
@@ -163,7 +163,7 @@ function renderActive(client){
  setLocalPending(false);setLocalUnknown(false);show('feedback',name,'💙');
 }
 function pending(){q('pending-id').textContent=currentId;show('pending','Заявка принята','✓')}
-function uncertain(){q('uncertain-id').textContent=currentId;show('uncertain','Проверяем заявку','?')}
+function uncertain(){q('uncertain-id').textContent=currentId;show('uncertain','Отправка не подтверждена','?')}
 function mapUrl(text,label){if(!text)return '';const href=safeLink(text,['https:']);if(!href)throw Error(label+': вставьте полную ссылку, начинающуюся с https://');return href}
 function internationalPhone(text,label){
  if(!text)return '';
@@ -219,11 +219,12 @@ async function sendRequest(e){
    'Время отправки (UTC)':new Date().toISOString(),
    'Ссылка стикера':location.origin+location.pathname+'?id='+encodeURIComponent(currentId)
   };
-  // Form-encoding не вызывает CORS preflight из-за application/json и поддерживается FormSubmit.
-  // Сами данные и готовый JSON остаются прежними.
+  // Документированный FormSubmit AJAX-формат: application/json.
+  // При сетевой ошибке не утверждаем, что письмо точно не доставлено.
   requestStarted=true;
   const response=await fetch('https://formsubmit.co/ajax/'+encodeURIComponent(CONFIG.recipient),{
-    method:'POST',headers:{Accept:'application/json'},body:new URLSearchParams(body),signal:timeoutSignal(CONFIG.requestTimeoutMs)
+    method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},
+    body:JSON.stringify(body),signal:timeoutSignal(CONFIG.requestTimeoutMs)
   });
   let result={};try{result=await response.json()}catch{}
   if(response.ok&&(result.success===true||result.success==='true')){
