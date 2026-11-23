@@ -15,9 +15,12 @@
 <header><span class="mark">Без Supabase · работа напрямую с GitHub</span><h1>Быстрая активация NFC-стикеров</h1><p>Больше не нужно скачивать, объединять и загружать <code>clients.json</code>. Вставь запись из письма и нажми «Активировать».</p></header>
 <section class="card">
  <h2>1. Доступ к GitHub</h2>
- <p class="small">Один раз создай <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Fine-grained token в GitHub</a>: владелец <strong>nfc-review-tech</strong>, репозиторий <strong>review</strong>, разрешение <strong>Contents: Read and write</strong>. Сохрани токен в менеджере паролей.</p>
+ <p class="small"><strong>Внимание: репозиторий принадлежит организации.</strong> В настройках Fine-grained token обязательно выбери <strong>Resource owner: nfc-review-tech</strong> (не свой личный аккаунт), <strong>Repository access: Only select repositories → review</strong>, <strong>Contents: Read and write</strong>. Если GitHub показывает статус Pending, администратор организации должен подтвердить токен.</p>
+ <p class="small"><a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener noreferrer">Проверить настройки токена</a></p>
  <label for="token">Твой GitHub-токен</label><input id="token" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="github_pat_...">
- <p class="small">Токен не сохраняется ни в этом файле, ни в браузере. Он отправляется только на <code>api.github.com</code> при чтении и обновлении данных. Никому его не пересылай и не вставляй в письма покупателям.</p>
+ <p class="small">Токен не сохраняется ни в этом файле, ни в браузере. Он отправляется только на <code>api.github.com</code>. Никому его не пересылай.</p>
+ <button id="test-access" class="outline" type="button">Проверить чтение GitHub</button>
+ <p id="access-status" class="small" aria-live="polite">Эта проверка ничего не изменяет в clients.json. Право записи проверится только при активации.</p>
 </section>
 <section class="card">
  <h2>2. Вставь запись клиента из письма</h2>
@@ -119,7 +122,17 @@
   let result;try{result=await resp.json()}catch{result={}};
   if(!resp.ok){
    const detail=typeof result.message==='string'?result.message:'';
-   const error=new Error(resp.status===401?'Неверный или просроченный токен GitHub.':resp.status===403?'GitHub отказал в доступе (403). Проверь, что токен выдан для nfc-review-tech/review с правом Contents: Read and write.':resp.status===404?'GitHub не видит репозиторий или clients.json. Проверь доступ токена.':resp.status===409?'Конфликт версий: другой редактор обновил файл.':resp.status===422?'GitHub отклонил обновление. Проверь права токена и правила защиты ветки.':`Ошибка GitHub HTTP ${resp.status}. ${detail}`);
+   const stage=method==='PUT'?'запись изменений (PUT)':'чтение клиентов (GET)';
+   const accepted=resp.headers.get('X-Accepted-GitHub-Permissions')||'';
+   const error=new Error(
+    resp.status===401?'GitHub: токен недействителен (401).':
+    resp.status===403?`GitHub запретил ${stage} (403). Проверь Resource owner: nfc-review-tech (организация), репозиторий review и Contents: Read and write. ${detail}`:
+    resp.status===404?'GitHub не видит репозиторий или clients.json. Проверь Resource owner и Repository access.':
+    resp.status===409?'Конфликт версий: кто-то уже обновил файл.':
+    resp.status===422?'GitHub отклонил обновление. Проверь права токена и правила защиты ветки.':
+    `Ошибка GitHub HTTP ${resp.status}. ${detail}`
+   );
+   if(accepted&&resp.status===403)error.message+='\nGitHub требует: '+accepted;
    error.httpStatus=resp.status;throw error;
   }
   return result;
@@ -132,6 +145,17 @@
   return {clients,sha:result.sha};
  };
  let busy=false;
+ $('test-access').addEventListener('click',async()=>{
+  const token=$('token').value.trim();
+  if(!token){$('access-status').textContent='Сначала вставь GitHub-токен в поле выше.';return;}
+  $('test-access').disabled=true;
+  $('access-status').textContent='Проверяю доступ к clients.json…';
+  try{
+   const {clients}=await loadCurrent(token);
+   $('access-status').textContent='Чтение работает: найдено '+Object.keys(clients).length+' клиентов. Это ещё не подтверждает право записи.';
+  }catch(e){$('access-status').textContent='Ошибка проверки: '+e.message;}
+  finally{$('test-access').disabled=false;}
+ });
  const preview=()=>{
   $('parse-error').textContent='';$('preview').style.display='none';
   if(!$('data').value.trim())return;
