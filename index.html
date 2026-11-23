@@ -265,6 +265,13 @@ q('uncertain-back').addEventListener('click',()=>{
  if(!confirm('Повторить заполнение и отправку только после того, как продавец подтвердил, что письма нет. Перейти к форме?'))return;
  setLocalUnknown(false);show('setup','Настройка NFC-стикера','⚙️');
 });
+// Приводим российский номер к +7 прямо в поле после ввода, не дожидаясь отправки формы.
+['whatsapp','phone'].forEach(id=>{
+ q(id).addEventListener('blur',()=>{
+  const value=q(id).value.trim();if(!value)return;
+  try{q(id).value=internationalPhone(value,id==='whatsapp'?'WhatsApp':'Телефон')}catch{}
+ });
+});
 q('setup-form').addEventListener('submit',sendRequest);
 document.addEventListener('DOMContentLoaded',init);
 </script>
