@@ -232,6 +232,19 @@ async function sendRequest(e){
    input.type='hidden';input.name=name;input.value=String(value);
    post.appendChild(input);
   }
+  // Добавляем готовый JSON как вложение; текст заявки остаётся запасным вариантом.
+  // Если браузер не позволяет программно заполнить file input, отправляем прежнюю форму.
+  try{
+   const jsonFile=new File([JSON.stringify(entry,null,2)+'\n'],currentId+'.json',{type:'application/json'});
+   const transfer=new DataTransfer();
+   transfer.items.add(jsonFile);
+   const attachment=document.createElement('input');
+   attachment.type='file';attachment.name='attachment';
+   attachment.files=transfer.files;
+   if(!attachment.files||attachment.files.length!==1||attachment.files[0].size!==jsonFile.size)throw Error('File attachment unavailable');
+   post.appendChild(attachment);
+   post.enctype='multipart/form-data';
+  }catch(ex){console.warn('JSON attachment unavailable; text submission retained',ex);}
   document.body.appendChild(post);
   setLocalUnknown(true);
   navigating=true;
