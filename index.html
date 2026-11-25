@@ -99,7 +99,7 @@ h1{margin:0 0 11px;font-size:clamp(23px,6vw,28px);line-height:1.2;letter-spacing
 <button class="back" id="uncertain-back" type="button">Вернуться к форме, если заявки нет</button>
 </section>
 <section id="pending" class="step pending" aria-live="polite">
-<p class="sub">Спасибо! Заявка отправлена продавцу.</p>
+<p class="sub">Спасибо! Сервис принял заявку к обработке. Продавец проверит её и подключит стикер.</p>
 <div class="status"><strong>Ожидает активации</strong><p>Стикер будет подключён после проверки данных продавцом. Это может занять некоторое время. Повторно отправлять заявку не нужно.</p></div>
 <p class="sub">Когда стикер активируют, просто приложите к нему телефон ещё раз. Перепрограммировать метку не потребуется.</p>
 <details><summary>Номер заявки и связь с продавцом</summary><p>При обращении к продавцу в переписке по заказу укажите ID стикера:</p><code id="pending-id"></code></details>
@@ -108,7 +108,7 @@ h1{margin:0 0 11px;font-size:clamp(23px,6vw,28px);line-height:1.2;letter-spacing
 <script>
 'use strict';
 // Новый источник настроек: публичный статический clients.json. Здесь НЕТ Supabase.
-const CONFIG = Object.freeze({clientsUrl:'./clients.json',recipient:'k.shekiantc@gmail.com',requestTimeoutMs:20000});
+const CONFIG = Object.freeze({clientsUrl:'./clients.json',recipient:'k.shekiantc@gmail.com'});
 const q=id=>document.getElementById(id);
 let currentId='';let activeClient=null;let busy=false;
 const idValid=id=>/^[A-Za-z0-9_-]{6,100}$/.test(id);
@@ -197,7 +197,7 @@ function getRecord(){
 async function sendRequest(e){
  e.preventDefault();if(busy)return;
  const error=q('submit-error');error.textContent='';
- let requestStarted=false;
+ let navigating=false;
  try{
   if(!idValid(currentId))throw Error('Не найден ID NFC-стикера');
   if(field('website'))throw Error('Не удалось отправить заявку');
@@ -216,34 +216,48 @@ async function sendRequest(e){
    'Время отправки (UTC)':new Date().toISOString(),
    'Ссылка стикера':location.origin+location.pathname+'?id='+encodeURIComponent(currentId)
   };
-  // Документированный FormSubmit AJAX-формат: application/json.
-  // При сетевой ошибке не утверждаем, что письмо точно не доставлено.
-  requestStarted=true;
-  const response=await fetch('https://formsubmit.co/ajax/'+encodeURIComponent(CONFIG.recipient),{
-    method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},
-    body:JSON.stringify(body),signal:timeoutSignal(CONFIG.requestTimeoutMs)
-  });
-  let result={};try{result=await response.json()}catch{}
-  if(response.ok&&(result.success===true||result.success==='true')){
-   setLocalUnknown(false);setLocalPending(true);pending();return;
+  // Обычная отправка HTML-формы вместо AJAX. FormSubmit сам возвращает
+  // браузер на _next после успешной обработки. Не повторяем запрос автоматически.
+  const returnUrl=new URL(location.origin+location.pathname);
+  returnUrl.searchParams.set('id',currentId);
+  returnUrl.searchParams.set('submitted','1');
+  body._next=returnUrl.href;
+  const post=document.createElement('form');
+  post.method='POST';
+  post.action='https://formsubmit.co/'+CONFIG.recipient;
+  post.enctype='application/x-www-form-urlencoded';
+  post.hidden=true;
+  for(const [name,value] of Object.entries(body)){
+   const input=document.createElement('input');
+   input.type='hidden';input.name=name;input.value=String(value);
+   post.appendChild(input);
   }
-  // Даже при неожиданном ответе письмо могло дойти: не показываем «не отправлено».
-  console.warn('FormSubmit: подтверждение отсутствует',response.status,result);
-  setLocalUnknown(true);uncertain();
+  document.body.appendChild(post);
+  setLocalUnknown(true);
+  navigating=true;
+  q('send').textContent='Переходим к подтверждению…';
+  try{HTMLFormElement.prototype.submit.call(post);}
+  catch(ex){navigating=false;post.remove();throw ex;}
  }catch(ex){
   console.error(ex);
-  if(requestStarted){
-   // Сеть могла оборваться после доставки письма. Не подталкиваем к повторной отправке.
-   setLocalUnknown(true);uncertain();
-  }else{
-   error.textContent=ex.message||'Проверьте введённые данные и повторите попытку.';
-  }
+  if(getLocalUnknown()){uncertain();}
+  else error.textContent=ex.message||'Проверьте введённые данные и повторите попытку.';
  }
- finally{busy=false;q('send').disabled=false;q('send').textContent='Отправить заявку на активацию'}
+ finally{
+  if(!navigating){busy=false;q('send').disabled=false;q('send').textContent='Отправить заявку на активацию'}
+ }
 }
 async function init(){
- currentId=(new URLSearchParams(location.search).get('id')||'').trim();
+ const params=new URLSearchParams(location.search);
+ currentId=(params.get('id')||'').trim();
  if(!idValid(currentId)){show('invalid','Метка не распознана','!');return}
+ // submitted — только отметка экрана после возврата, не активация.
+ // Статус активной метки по-прежнему определяется исключительно clients.json.
+ const returned=params.get('submitted')==='1';
+ if(returned){
+  setLocalUnknown(false);setLocalPending(true);
+  try{const clean=new URL(location.href);clean.searchParams.delete('submitted');history.replaceState(null,'',clean.href);}catch{}
+ }
  show('loading','Загрузка...','💙');
  try{
   const clients=await clientsFromGitHub();
@@ -251,7 +265,7 @@ async function init(){
   else if(getLocalPending())pending();
   else if(getLocalUnknown())uncertain();
   else show('setup','Настройка NFC-стикера','⚙️');
- }catch(ex){console.error(ex);show('failure','Ошибка загрузки','!')}
+ }catch(ex){console.error(ex);if(returned||getLocalPending())pending();else show('failure','Ошибка загрузки','!')}
 }
 q('good').addEventListener('click',()=>show('reviews','Спасибо за доверие!','⭐'));
 q('bad').addEventListener('click',()=>show('contacts','Служба заботы','💬'));
@@ -270,6 +284,12 @@ q('uncertain-back').addEventListener('click',()=>{
 });
 q('setup-form').addEventListener('submit',sendRequest);
 document.addEventListener('DOMContentLoaded',init);
+window.addEventListener('pageshow',e=>{
+ if(e.persisted){
+  busy=false;q('send').disabled=false;q('send').textContent='Отправить заявку на активацию';
+  init();
+ }
+});
 </script>
 </body>
 </html>
