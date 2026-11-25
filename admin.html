@@ -12,7 +12,7 @@
 </head>
 <body>
 <main>
-<header><span class="mark">Без Supabase · работа напрямую с GitHub</span><h1>Быстрая активация NFC-стикеров</h1><p>Больше не нужно скачивать, объединять и загружать <code>clients.json</code>. Вставь запись из письма и нажми «Активировать».</p></header>
+<header><span class="mark">Без Supabase · работа напрямую с GitHub</span><h1>Быстрая активация NFC-стикеров</h1><p>Больше не нужно скачивать, объединять и загружать <code>clients.json</code>. Загрузи файл заявки из письма или вставь запись и нажми «Активировать».</p></header>
 <section class="card">
  <h2>1. Доступ к GitHub</h2>
  <p class="small"><strong>Внимание: репозиторий принадлежит организации.</strong> В настройках Fine-grained token обязательно выбери <strong>Resource owner: nfc-review-tech</strong> (не свой личный аккаунт), <strong>Repository access: Only select repositories → review</strong>, <strong>Contents: Read and write</strong>. Если GitHub показывает статус Pending, администратор организации должен подтвердить токен.</p>
@@ -23,8 +23,10 @@
  <p id="access-status" class="small" aria-live="polite">Эта проверка ничего не изменяет в clients.json. Право записи проверится только при активации.</p>
 </section>
 <section class="card">
- <h2>2. Вставь запись клиента из письма</h2>
- <p class="small">Скопируй целиком поле «Готовая запись для clients.json», начиная с <code>{</code> и заканчивая <code>}</code>. Для нескольких заявок вставь их одну за другой — каждая отдельным JSON-блоком.</p>
+ <h2>2. Загрузи заявку клиента</h2>
+ <label for="json-files">JSON-файл из письма</label><input id="json-files" type="file" accept=".json,application/json" multiple>
+ <p class="small">Можно выбрать несколько файлов. Они добавятся в поле ниже; перед активацией проверь названия организаций.</p>
+ <p class="small">Если вложения нет, скопируй целиком поле «Готовая запись для clients.json», начиная с <code>{</code> и заканчивая <code>}</code>. Для нескольких заявок вставь их одну за другой — каждая отдельным JSON-блоком.</p>
  <label for="data">Данные для активации</label>
  <textarea id="data" spellcheck="false" autocapitalize="off" placeholder='{
   "nfc_12345678-1234-4234-8234-123456789012": {
@@ -35,7 +37,7 @@
  <div id="preview" class="preview"><strong>Новые заявки:</strong><ul id="preview-list"></ul></div>
  <p id="parse-error" class="danger" role="status" aria-live="polite"></p>
  <div class="actions"><button id="activate" type="button">Активировать стикер(ы) в GitHub</button><button id="clear" class="outline" type="button">Очистить заявки</button></div>
- <div id="status" class="msg" aria-live="polite">Сейчас изменений нет. Сначала вставь запись из письма.</div>
+ <div id="status" class="msg" aria-live="polite">Сейчас изменений нет. Загрузи JSON-файл или вставь запись из письма.</div>
 </section>
 <section class="card">
  <h2>Что происходит после нажатия?</h2>
@@ -168,6 +170,23 @@
   }catch(e){$('parse-error').textContent=e.message;}
  };
  $('data').addEventListener('input',preview);
+ $('json-files').addEventListener('change',async()=>{
+  const input=$('json-files'),files=Array.from(input.files||[]);
+  if(!files.length)return;
+  input.disabled=true;
+  try{
+   if(busy)throw Error('Дождись завершения активации.');
+   if(files.some(f=>!f.name.toLowerCase().endsWith('.json')))throw Error('Выбери файл с расширением .json.');
+   if(files.reduce((n,f)=>n+f.size,0)>720000)throw Error('Слишком большой объём файлов.');
+   const docs=await Promise.all(files.map(f=>f.text()));
+   if(busy)throw Error('Дождись завершения активации.');
+   const combined=[$('data').value.trim(),...docs.map(d=>d.trim())].filter(Boolean).join('\n\n');
+   const entries=parseEntries(combined);
+   $('data').value=combined;preview();
+   message('Загружено файлов: '+files.length+'. Готово заявок: '+Object.keys(entries).length+'. Проверь список и нажми «Активировать».','ok');
+  }catch(e){message('Не удалось загрузить файл: '+e.message+' Прежние заявки не изменены.','err');}
+  finally{input.value='';input.disabled=false;}
+ });
  $('clear').addEventListener('click',()=>{$('data').value='';preview();message('Поле очищено. Все действующие клиенты остались без изменений.');});
  $('activate').addEventListener('click',async()=>{
   if(busy)return;
